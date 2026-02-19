@@ -44,7 +44,7 @@ export function createApp() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString(), hasAdminPw: !!process.env.ADMIN_PASSWORD, nodeEnv: process.env.NODE_ENV });
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   // Routes
