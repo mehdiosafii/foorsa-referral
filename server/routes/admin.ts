@@ -172,6 +172,7 @@ router.post('/api/admin/users', authenticateAdmin, async (req, res) => {
       .insert({
         first_name: firstName,
         last_name: lastName,
+        full_name: `${firstName} ${lastName}`.trim(),
         email,
         phone,
         referral_code: referralCode,
@@ -205,6 +206,12 @@ router.put('/api/admin/users/:id', authenticateAdmin, async (req, res) => {
     if (points !== undefined) updates.points = points;
     if (password) {
       updates.password_hash = await bcrypt.hash(password, 10);
+    }
+    if (firstName || lastName) {
+      // Re-compute full_name
+      const fn = firstName || '';
+      const ln = lastName || '';
+      updates.full_name = `${fn} ${ln}`.trim() || undefined;
     }
 
     const { data: ambassador, error } = await supabase

@@ -20,7 +20,7 @@ export function createApp() {
   // CORS
   app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-      ? ['https://foorsa-referral.vercel.app', 'https://foorsa.live']
+      ? [process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://foorsa-referral.vercel.app', 'https://foorsa.live']
       : 'http://localhost:5173',
     credentials: true,
   }));
@@ -40,7 +40,10 @@ export function createApp() {
   app.use('/api/', limiter);
 
   // Health check
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+  app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 

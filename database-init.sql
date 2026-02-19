@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS ref_ambassadors (
   id SERIAL PRIMARY KEY,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
-  full_name TEXT GENERATED ALWAYS AS (first_name || ' ' || last_name) STORED,
+  full_name TEXT,
   email TEXT UNIQUE,
   phone TEXT,
   referral_code TEXT UNIQUE NOT NULL,

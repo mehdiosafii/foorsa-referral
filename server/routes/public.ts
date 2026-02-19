@@ -72,16 +72,18 @@ router.post('/api/leads', async (req, res) => {
 
     // Update ambassador points if applicable
     if (ambassadorId) {
-      await supabase.rpc('increment_ambassador_points', {
-        ambassador_id: ambassadorId,
-        points_to_add: 10,
-      }).catch(() => {
-        // Fallback if RPC doesn't exist
-        supabase
+      // Fetch current points then increment
+      const { data: amb } = await supabase
+        .from('ref_ambassadors')
+        .select('points')
+        .eq('id', ambassadorId)
+        .single();
+      if (amb) {
+        await supabase
           .from('ref_ambassadors')
-          .update({ points: supabase.raw('points + 10') })
+          .update({ points: (amb.points || 0) + 10 })
           .eq('id', ambassadorId);
-      });
+      }
     }
 
     res.json({ success: true, lead });
@@ -120,10 +122,18 @@ router.get('/ref/:code', async (req, res) => {
       });
 
       // Increment tracking link clicks if exists
-      await supabase
+      const { data: links } = await supabase
         .from('ref_tracking_links')
-        .update({ clicks_count: supabase.raw('clicks_count + 1') })
+        .select('id, clicks_count')
         .eq('ambassador_id', ambassador.id);
+      if (links?.length) {
+        for (const link of links) {
+          await supabase
+            .from('ref_tracking_links')
+            .update({ clicks_count: (link.clicks_count || 0) + 1 })
+            .eq('id', link.id);
+        }
+      }
     }
 
     // Redirect to landing page with tracking code
