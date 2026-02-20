@@ -1,0 +1,187 @@
+CREATE PUBLIC API ENDPOINTS FOR FOORSA.MA INTEGRATION
+
+Foorsa.ma needs to fetch data from this platform. Create read-only API endpoints with CORS enabled.
+
+==============================================================
+PART 1: ENABLE CORS FOR EXTERNAL ACCESS
+==============================================================
+
+At the top of app.py, add:
+from flask_cors import CORS
+
+After creating the Flask app:
+CORS(app, resources={r"/api/external/*": {"origins": "*"}})
+
+==============================================================
+PART 2: CREATE EXTERNAL API ENDPOINTS
+==============================================================
+
+Add these endpoints to app.py:
+
+# ============================================
+# EXTERNAL API FOR FOORSA.MA
+# ============================================
+
+@app.route('/api/external/stats', methods=['GET'])
+def external_stats():
+    """Get overall platform stats for foorsa.ma dashboard"""
+    try:
+        # Load your data files (adjust paths to match your actual data storage)
+        ambassadors = load_ambassadors()  # Your function to load ambassadors
+        leads = load_leads()  # Your function to load leads
+        clicks = load_clicks()  # Your function to load clicks
+        
+        total_ambassadors = len(ambassadors)
+        total_leads = len(leads)
+        total_clicks = sum(a.get('clicks', 0) for a in ambassadors)
+        total_conversions = sum(a.get('conversions', 0) for a in ambassadors)
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'total_ambassadors': total_ambassadors,
+                'total_leads': total_leads,
+                'total_clicks': total_clicks,
+                'total_conversions': total_conversions,
+                'conversion_rate': round((total_leads / total_clicks * 100), 1) if total_clicks > 0 else 0
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/external/ambassadors', methods=['GET'])
+def external_ambassadors():
+    """Get all ambassadors for foorsa.ma dashboard"""
+    try:
+        ambassadors = load_ambassadors()  # Your function
+        
+        # Return simplified data (no passwords or sensitive info)
+        safe_ambassadors = []
+        for a in ambassadors:
+            safe_ambassadors.append({
+                'id': a.get('id'),
+                'name': a.get('name'),
+                'email': a.get('email'),
+                'code': a.get('code') or a.get('referral_code'),
+                'clicks': a.get('clicks', 0),
+                'leads': a.get('leads', 0),
+                'conversions': a.get('conversions', 0),
+                'joined': a.get('created_at') or a.get('joined'),
+                'active': a.get('active', True)
+            })
+        
+        return jsonify({
+            'success': True,
+            'ambassadors': safe_ambassadors
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/external/leads', methods=['GET'])
+def external_leads():
+    """Get recent leads for foorsa.ma dashboard"""
+    try:
+        leads = load_leads()  # Your function
+        
+        # Get query params for filtering
+        limit = request.args.get('limit', 50, type=int)
+        ambassador_code = request.args.get('ambassador', None)
+        
+        # Filter by ambassador if specified
+        if ambassador_code:
+            leads = [l for l in leads if l.get('source', '').upper() == ambassador_code.upper() or l.get('ambassador_code', '').upper() == ambassador_code.upper()]
+        
+        # Sort by date, newest first
+        leads = sorted(leads, key=lambda x: x.get('created_at', x.get('date', '')), reverse=True)
+        
+        # Limit results
+        leads = leads[:limit]
+        
+        # Return simplified data
+        safe_leads = []
+        for l in leads:
+            safe_leads.append({
+                'id': l.get('id'),
+                'name': l.get('name'),
+                'phone': l.get('phone'),
+                'email': l.get('email'),
+                'source': l.get('source') or l.get('ambassador_name'),
+                'ambassador_code': l.get('ambassador_code') or l.get('referral_code'),
+                'program': l.get('program') or l.get('program_type'),
+                'status': l.get('status', 'new'),
+                'message_status': l.get('message_status'),
+                'date': l.get('created_at') or l.get('date')
+            })
+        
+        return jsonify({
+            'success': True,
+            'leads': safe_leads,
+            'total': len(leads)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/external/tracking-links', methods=['GET'])
+def external_tracking_links():
+    """Get tracking links for foorsa.ma dashboard"""
+    try:
+        links = load_tracking_links()  # Your function
+        
+        safe_links = []
+        for l in links:
+            safe_links.append({
+                'id': l.get('id'),
+                'name': l.get('name'),
+                'code': l.get('code'),
+                'platform': l.get('platform'),
+                'clicks': l.get('clicks', 0),
+                'leads': l.get('leads', 0),
+                'active': l.get('active', True)
+            })
+        
+        return jsonify({
+            'success': True,
+            'tracking_links': safe_links
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/external/activity', methods=['GET'])
+def external_activity():
+    """Get recent activity for foorsa.ma dashboard"""
+    try:
+        leads = load_leads()
+        clicks = load_clicks() if hasattr(load_clicks, '__call__') else []
+        
+        # Combine into activity feed
+        activities = []
+        
+        for l in leads[-20:]:
+            activities.append({
+                'type': 'lead',
+                'name': l.get('name'),
+                'source': l.get('source'),
+                'timestamp': l.get('created_at') or l.get('date')
+            })
+        
+        # Sort by time
+        activities = sorted(activities, key=lambda x: x.get('timestamp', ''), reverse=True)[:20]
+        
+        return jsonify({
+            'success': True,
+            'activities': activities
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+==============================================================
+PART 3: TEST THE API
+==============================================================
+
+After adding the endpoints, test them:
+
+curl http://localhost:5000/api/external/stats
+curl http://localhost:5000/api/external/ambassadors
+curl http://localhost:5000/api/external/leads?limit=10
+
+Show me the output of each test.

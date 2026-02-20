@@ -1,101 +1,79 @@
 # Foorsa Referral Engine
 
-A referral/ambassador marketing platform for "Foorsa - Study in China". Ambassadors share tracking links, get leads, earn points on a leaderboard.
+Rebuilt from the original Replit app for Vercel + Supabase deployment.
 
-## Features
+## Architecture
 
-- 🎯 **Landing Page** - Bilingual (French/English) with lead capture form
-- 📊 **Ambassador Dashboard** - Track clicks, leads, conversions, and points
-- 👑 **Admin Panel** - Full CRUD for ambassadors and leads
-- 📈 **Analytics** - Real-time charts and statistics
-- 💬 **WhatsApp Integration** - Quick-send to leads
-- 🗺️ **Tracking** - Monitor referral link performance
-- 🏆 **Leaderboard** - Public ranking by points
+- **Frontend**: React + Vite (client/)
+- **Backend**: Vercel Serverless Functions (api/)
+- **Database**: Supabase PostgreSQL (shared with Foorsa Reward)
+- **Deployment**: Vercel
 
-## Tech Stack
+## Database Tables
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
-- **Backend**: Express, TypeScript
-- **Database**: PostgreSQL (Supabase)
-- **Deployment**: Vercel Serverless
-- **Analytics**: Google Analytics, Facebook Pixel
+All tables prefixed with `ref_` to avoid conflicts:
 
-## Project Structure
+- `ref_users` - Ambassadors
+- `ref_clicks` - Click tracking
+- `ref_leads` - Lead submissions
+- `ref_conversions` - Successful sales
+- `ref_tracking_links` - Admin tracking links
+- `ref_tracking_clicks` - Tracking link clicks
+- `ref_tracking_leads` - Tracking link leads
+- `ref_whatsapp_sequences` - Automated WhatsApp sequences
+- `ref_whatsapp_sequence_steps` - Sequence steps
+- `ref_whatsapp_sequence_assignments` - Lead sequence assignments
+- `ref_whatsapp_messages` - WhatsApp message queue
+- `ref_api_keys` - API keys for integrations
+- `ref_webhooks` - Webhook configurations
+- `ref_lead_exports` - Export tracking
+- `ref_respondio_contacts` - Respond.io contacts
+- `ref_respondio_webhook_log` - Webhook logs
 
+## Environment Variables
+
+Set in Vercel:
+- `DATABASE_URL` - PostgreSQL connection string
+- `ADMIN_PASSWORD` - Admin login password (default: FoorsaRef2026!)
+
+## Development
+
+```bash
+npm install
+npm run dev
 ```
-foorsa-referral/
-├── src/                    # React frontend
-│   ├── pages/              # Page components
-│   ├── App.tsx             # Main app with routing
-│   └── main.tsx            # Entry point
-├── server/                 # Express backend
-│   ├── routes/             # API route handlers
-│   ├── middleware/         # Auth middleware
-│   ├── config/             # Database config
-│   └── utils/              # Helper functions
-├── api/                    # Vercel serverless wrapper
-│   └── index.ts
-└── vercel.json             # Vercel deployment config
-```
-
-## Database Schema
-
-All tables use `ref_` prefix to avoid conflicts:
-
-- `ref_ambassadors` - Ambassador accounts with referral codes
-- `ref_leads` - Captured leads from landing page
-- `ref_clicks` - Click tracking data
-- `ref_tracking_links` - Tracking link performance
-
-## Setup
-
-1. Clone the repository
-2. Copy `.env.local.example` to `.env.local` and fill in values
-3. Install dependencies: `npm install`
-4. Run development server: `npm run dev`
-5. Build for production: `npm run build`
 
 ## Deployment
 
-Deploy to Vercel:
-
 ```bash
-vercel --prod
+npm run build
+npx vercel --prod
 ```
 
-Set environment variables in Vercel dashboard:
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `JWT_SECRET`
-- `ADMIN_PASSWORD`
+## Admin Access
+
+- URL: `/admin`
+- Password: `FoorsaRef2026!`
+
+## Ambassador Login
+
+- URL: `/login`
+- Credentials: Email + Password (created by admin)
 
 ## API Routes
 
 ### Public
-- `GET /api/leaderboard` - Public leaderboard
-- `POST /api/leads` - Submit new lead
-- `GET /ref/:code` - Tracking redirect
+- `POST /api/track/:code` - Track click
+- `POST /api/track/:code/lead` - Submit lead
+- `GET /api/ambassadors/public` - List ambassadors
 
-### Ambassador (requires auth)
-- `POST /api/ambassador/login` - Login
-- `GET /api/ambassador/me` - Get profile
-- `GET /api/stats` - Get personal stats
-- `GET /api/leads/recent` - Recent leads
+### Ambassador (authenticated)
+- `GET /api/stats?userId=:id` - Get stats
+- `GET /api/leads?userId=:id` - Get leads
+- `GET /api/leaderboard` - Get leaderboard
 
-### Admin (requires auth)
-- `POST /api/login` - Admin login
-- `GET /api/admin/stats` - System stats
+### Admin (authenticated)
+- `GET /api/admin/stats` - Admin dashboard stats
 - `GET /api/admin/users` - List ambassadors
 - `POST /api/admin/users` - Create ambassador
 - `GET /api/admin/leads` - List all leads
-- `POST /api/admin/leads/quick-send` - WhatsApp quick send
-- `POST /api/admin/leads/bulk-send` - WhatsApp bulk send
-
-## Default Credentials
-
-- **Admin Password**: Set in `.env.local` as `ADMIN_PASSWORD`
-- **Test Ambassadors**: Use `/api/admin/seed-ambassadors` to create test accounts
-
-## License
-
-Proprietary - Foorsa © 2026
