@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from 'pg';
+import crypto from 'crypto';
 
 let pool: Pool | null = null;
 function getPool(): Pool {
@@ -36,8 +37,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const user = result.rows[0];
 
-    // Simple password comparison (passwords stored as plain text or bcrypt)
-    if (user.password !== password) {
+    // Compare SHA-256 hashed password
+    const hashed = crypto.createHash('sha256').update(password).digest('hex');
+    if (user.password !== hashed && user.password !== password) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
