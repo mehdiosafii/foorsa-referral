@@ -31,8 +31,9 @@ export default function AmbassadorLogin() {
       const res = await apiRequest("POST", "/api/ambassador/login", credentials);
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/ambassador/me"] });
+    onSuccess: (data) => {
+      localStorage.setItem("ambassador_user", JSON.stringify(data));
+      window.dispatchEvent(new Event("ambassador_login"));
       setLocation("/dashboard");
     },
     onError: () => {

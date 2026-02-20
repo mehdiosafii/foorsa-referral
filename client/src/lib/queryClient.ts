@@ -8,7 +8,7 @@ async function throwIfResNotOk(res: Response) {
 }
 
 function getAdminPassword(): string | null {
-  return sessionStorage.getItem("adminAuthenticated") === "true" ? "1234" : null;
+  return sessionStorage.getItem("adminPassword") || (sessionStorage.getItem("adminAuthenticated") === "true" ? "FoorsaRef2026!" : null);
 }
 
 export async function apiRequest(

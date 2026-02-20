@@ -37,14 +37,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, authType } = useAuth();
   const { t, dir } = useLanguage();
 
-  const handleLogout = async () => {
-    if (authType === "ambassador") {
-      await fetch("/api/ambassador/logout", { method: "POST", credentials: "include" });
-      queryClient.invalidateQueries({ queryKey: ["/api/ambassador/me"] });
-      window.location.href = "/";
-    } else {
-      window.location.href = "/api/logout";
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("ambassador_user");
+    window.location.href = "/";
   };
 
   return (

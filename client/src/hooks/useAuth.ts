@@ -1,42 +1,43 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import type { User } from "@shared/schema";
 
-async function fetchWithNullOn401(url: string): Promise<User | null> {
-  const res = await fetch(url, { credentials: "include" });
-  if (res.status === 401) {
-    return null;
-  }
-  if (!res.ok) {
-    throw new Error(`${res.status}: ${res.statusText}`);
-  }
-  return res.json();
-}
-
 export function useAuth() {
-  const { data: replitUser, isLoading: replitLoading } = useQuery<User | null>({
-    queryKey: ["/api/auth/user"],
-    queryFn: () => fetchWithNullOn401("/api/auth/user"),
-    retry: false,
-    staleTime: 0,
-    refetchOnMount: "always",
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem("ambassador_user");
+    return stored ? JSON.parse(stored) : null;
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: ambassadorUser, isLoading: ambassadorLoading } = useQuery<User | null>({
-    queryKey: ["/api/ambassador/me"],
-    queryFn: () => fetchWithNullOn401("/api/ambassador/me"),
-    retry: false,
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = localStorage.getItem("ambassador_user");
+      setUser(stored ? JSON.parse(stored) : null);
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("ambassador_login", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("ambassador_login", handleStorageChange);
+    };
+  }, []);
 
-  const user = replitUser || ambassadorUser || null;
-  const isLoading = replitLoading || ambassadorLoading;
-  const authType = replitUser ? "replit" : ambassadorUser ? "ambassador" : null;
+  const login = (userData: User) => {
+    localStorage.setItem("ambassador_user", JSON.stringify(userData));
+    setUser(userData);
+    window.dispatchEvent(new Event("ambassador_login"));
+  };
+
+  const logout = () => {
+    localStorage.removeItem("ambassador_user");
+    setUser(null);
+  };
 
   return {
     user,
     isLoading,
     isAuthenticated: !!user,
-    authType,
+    authType: user ? "ambassador" as const : null,
+    login,
+    logout,
   };
 }

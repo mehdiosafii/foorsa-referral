@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import foorsaLogo from "@assets/logo_official.png";
 
-const ADMIN_PASSWORD = "1234";
+const ADMIN_PASSWORD = "FoorsaRef2026!";
 
 const navItems = [
   { title: "Overview", href: "/admin", icon: Home },
@@ -95,6 +95,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem("adminAuthenticated", "true");
+      sessionStorage.setItem("adminPassword", password);
       onSuccess();
     } else {
       setError("Incorrect password");
