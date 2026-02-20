@@ -1,11 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -13,14 +9,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { referralCode, fullName, email, phone, whatsappNumber, age, preferredProgram, preferredCity, message } = req.body;
     if (!fullName || !whatsappNumber) return res.status(400).json({ error: 'Full name and WhatsApp number required' });
 
-    const p = getPool();
+    const pool = getPool();
     
     // Find ambassador by referral code
-    const userResult = await p.query('SELECT id FROM ref_users WHERE referral_code = $1 AND deleted_at IS NULL', [referralCode]);
+    const userResult = await pool.query('SELECT id FROM ref_users WHERE referral_code = $1 AND deleted_at IS NULL', [referralCode]);
     if (userResult.rows.length === 0) return res.status(404).json({ error: 'Invalid referral code' });
     
     const userId = userResult.rows[0].id;
-    const result = await p.query(
+    const result = await pool.query(
       `INSERT INTO ref_leads (user_id, full_name, email, phone, whatsapp_number, age, preferred_program, preferred_city, message, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'new') RETURNING *`,
       [userId, fullName, email, phone, whatsappNumber, age, preferredProgram, preferredCity, message]

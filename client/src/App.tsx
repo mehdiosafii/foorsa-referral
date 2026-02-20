@@ -12,7 +12,8 @@ import HomePage from "@/pages/HomePage";
 import LandingPage from "@/pages/LandingPage";
 import ThankYouPage from "@/pages/ThankYouPage";
 import Dashboard from "@/pages/Dashboard";
-import AdminPanel from "@/pages/AdminPanel";
+// OLD ADMIN PANEL DEPRECATED - Use /admin instead
+// import AdminPanel from "@/pages/AdminPanel";
 import AmbassadorLogin from "@/pages/AmbassadorLogin";
 import NotFound from "@/pages/not-found";
 import foorsaLogo from "@assets/logo_official.png";
@@ -79,41 +80,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function OldAdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-          <div className="flex items-center justify-between gap-4 h-16">
-            <div className="flex items-center gap-3">
-              <img src={foorsaLogo} alt="Foorsa" className="h-8" />
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-lg">Admin Panel (Old)</span>
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">Legacy</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="rounded-xl" data-testid="link-new-admin">
-                  New Admin
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="rounded-xl" data-testid="link-home">
-                  Home
-                </Button>
-              </Link>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
-      <main className="flex-1">
-        {children}
-      </main>
-    </div>
-  );
-}
+// OLD LAYOUT REMOVED - Using new AdminLayout for all admin routes
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -130,10 +97,11 @@ function Router() {
       <Route path="/thank-you">
         <ThankYouPage />
       </Route>
+      {/* OLD ADMIN PANEL DEPRECATED - Redirects to new admin */}
       <Route path="/admin-old">
-        <OldAdminLayout>
-          <AdminPanel />
-        </OldAdminLayout>
+        <AdminLayout>
+          <AdminOverview />
+        </AdminLayout>
       </Route>
       <Route path="/admin/ambassadors">
         <AdminLayout>

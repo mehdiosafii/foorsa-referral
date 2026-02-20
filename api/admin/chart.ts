@@ -1,19 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const p = getPool();
+    const pool = getPool();
     const days = parseInt(req.query.days as string) || 30;
     
-    const clicksResult = await p.query(`
+    const clicksResult = await pool.query(`
       SELECT DATE(created_at) as date, COUNT(*)::int as count
       FROM ref_clicks
       WHERE created_at >= NOW() - INTERVAL '${days} days'
@@ -21,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ORDER BY date
     `);
     
-    const leadsResult = await p.query(`
+    const leadsResult = await pool.query(`
       SELECT DATE(created_at) as date, COUNT(*)::int as count
       FROM ref_leads
       WHERE created_at >= NOW() - INTERVAL '${days} days' AND deleted_at IS NULL

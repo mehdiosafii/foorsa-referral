@@ -1,17 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const p = getPool();
-    const result = await p.query(`
+    const pool = getPool();
+    const result = await pool.query(`
       SELECT l.*, u.first_name, u.last_name, u.referral_code
       FROM ref_leads l
       LEFT JOIN ref_users u ON l.user_id = u.id

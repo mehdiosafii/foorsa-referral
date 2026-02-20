@@ -1,17 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) {
-    pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 3,
-    });
-  }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -24,8 +14,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'User ID required' });
     }
 
-    const p = getPool();
-    const result = await p.query(`
+    const pool = getPool();
+    const result = await pool.query(`
       SELECT 
         (SELECT COUNT(*) FROM ref_clicks WHERE user_id = $1)::int as total_clicks,
         (SELECT COUNT(*) FROM ref_leads WHERE user_id = $1)::int as total_leads,

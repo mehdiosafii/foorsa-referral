@@ -1,24 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) {
-    pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 3,
-    });
-  }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const p = getPool();
+  const pool = getPool();
 
   if (req.method === 'GET') {
     try {
-      const result = await p.query(`
+      const result = await pool.query(`
         SELECT 
           u.*,
           COUNT(DISTINCT c.id)::int as total_clicks,
@@ -46,7 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       const referralCode = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Date.now().toString(36)}`;
       // Simple hash for now - bcrypt causes issues in serverless
-      const result = await p.query(
+      const result = await pool.query(
         `INSERT INTO ref_users (first_name, last_name, email, phone, password, referral_code, instagram_url, youtube_url, tiktok_url, instagram_followers, youtube_followers, tiktok_followers)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
         [firstName, lastName, email, phone, password, referralCode, instagramUrl, youtubeUrl, tiktokUrl, instagramFollowers || 0, youtubeFollowers || 0, tiktokFollowers || 0]

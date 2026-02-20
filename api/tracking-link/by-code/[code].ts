@@ -1,18 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const { code } = req.query;
-    const p = getPool();
-    const result = await p.query('SELECT * FROM ref_tracking_links WHERE code = $1 AND is_active = true', [code]);
+    const pool = getPool();
+    const result = await pool.query('SELECT * FROM ref_tracking_links WHERE code = $1 AND is_active = true', [code]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Tracking link not found' });
     return res.status(200).json(result.rows[0]);
   } catch (error: any) {

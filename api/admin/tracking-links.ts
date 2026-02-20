@@ -1,18 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool } from 'pg';
+import { getPool } from '../_db';
 
-let pool: Pool | null = null;
-function getPool(): Pool {
-  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
-  return pool;
-}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const p = getPool();
+  const pool = getPool();
 
   if (req.method === 'GET') {
     try {
-      const result = await p.query(`
+      const result = await pool.query(`
         SELECT 
           tl.*,
           COUNT(DISTINCT tc.id)::int as total_clicks,
@@ -33,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { name, platform, code } = req.body;
       if (!name || !platform || !code) return res.status(400).json({ error: 'Missing fields' });
-      const result = await p.query(
+      const result = await pool.query(
         'INSERT INTO ref_tracking_links (name, platform, code) VALUES ($1, $2, $3) RETURNING *',
         [name, platform, code]
       );
