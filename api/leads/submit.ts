@@ -1,7 +1,21 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getPool } from './_helpers';
+import { Pool } from 'pg';
 
 
+
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
+  }
+  return pool;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
