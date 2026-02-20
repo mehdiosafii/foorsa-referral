@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Share2, Sparkles } from "lucide-react";
+import { Copy, Check, Share2, Sparkles, QrCode, Download } from "lucide-react";
 import { SiWhatsapp, SiFacebook, SiInstagram, SiTiktok } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { QRCodeSVG } from "qrcode.react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ReferralLinkCardProps {
   referralCode: string;
@@ -11,6 +20,7 @@ interface ReferralLinkCardProps {
 
 export function ReferralLinkCard({ referralCode }: ReferralLinkCardProps) {
   const [copied, setCopied] = useState(false);
+  const [showQR, setShowQR] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
   
@@ -89,6 +99,34 @@ export function ReferralLinkCard({ referralCode }: ReferralLinkCardProps) {
       title: t.dashboard.referralLink.copied,
       description: t.dashboard.referralLink.tiktokHint,
     });
+  };
+
+  const downloadQRCode = () => {
+    const svg = document.getElementById('qr-code-svg') as SVGElement;
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      canvas.width = 300;
+      canvas.height = 300;
+      
+      img.onload = () => {
+        ctx?.drawImage(img, 0, 0);
+        const url = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `foorsa-referral-${referralCode}.png`;
+        link.click();
+        toast({
+          title: "QR Code Downloaded",
+          description: "Share this QR code with your audience!",
+        });
+      };
+      
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    }
   };
 
   return (
@@ -171,6 +209,46 @@ export function ReferralLinkCard({ referralCode }: ReferralLinkCardProps) {
             <SiTiktok className="h-4 w-4" />
             <span className="hidden sm:inline">TikTok</span>
           </Button>
+          
+          <Dialog open={showQR} onOpenChange={setShowQR}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline"
+                className="gap-2 rounded-xl"
+                data-testid="button-show-qr"
+              >
+                <QrCode className="h-4 w-4" />
+                <span className="hidden sm:inline">QR Code</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>QR Code for Your Referral Link</DialogTitle>
+                <DialogDescription>
+                  Scan this QR code or download it to share offline
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-center gap-4 py-4">
+                <div className="p-4 bg-white rounded-lg">
+                  <QRCodeSVG
+                    id="qr-code-svg"
+                    value={referralUrl}
+                    size={256}
+                    level="H"
+                    includeMargin={true}
+                  />
+                </div>
+                <Button 
+                  onClick={downloadQRCode}
+                  className="gap-2 w-full"
+                  data-testid="button-download-qr"
+                >
+                  <Download className="h-4 w-4" />
+                  Download QR Code
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
