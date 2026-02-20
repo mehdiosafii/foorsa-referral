@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getPool } from '../db';
+import { getPool } from '../lib/db';
 
 
 
