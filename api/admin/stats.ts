@@ -1,17 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 import { Pool } from 'pg';
 
 let pool: Pool | null = null;
-
 function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
       max: 3,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
     });
   }
   return pool;
@@ -23,7 +19,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const stats = const pool = getPool(); const result = await pool.query<any>(`
+    const p = getPool();
+    const result = await p.query(`
       SELECT 
         (SELECT COUNT(*) FROM ref_users WHERE deleted_at IS NULL) as total_ambassadors,
         (SELECT COUNT(*) FROM ref_clicks) as total_clicks,
@@ -34,6 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         (SELECT COUNT(*) FROM ref_tracking_leads) as total_tracking_leads
     `);
 
+    const stats = result.rows[0];
     return res.status(200).json({
       totalAmbassadors: parseInt(stats.total_ambassadors),
       totalClicks: parseInt(stats.total_clicks),

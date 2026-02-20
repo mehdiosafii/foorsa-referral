@@ -1,17 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 import { Pool } from 'pg';
 
 let pool: Pool | null = null;
-
 function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
       max: 3,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
     });
   }
   return pool;
@@ -24,20 +20,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { userId } = req.query;
-
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'User ID required' });
     }
 
-    const leads = const pool = getPool(); const result = await pool.query(`
-      SELECT * FROM ref_leads 
-      WHERE user_id = $1 AND deleted_at IS NULL
-      ORDER BY created_at DESC
-    `, [userId]);
-
-    return res.status(200).json(result.rows.length > 0 ? result.rows[0] : result.rows);
+    const p = getPool();
+    const result = await p.query(
+      'SELECT * FROM ref_leads WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC',
+      [userId]
+    );
+    return res.status(200).json(result.rows);
   } catch (error: any) {
-    console.error('Get leads error:', error);
     return res.status(500).json({ error: error.message });
   }
 }

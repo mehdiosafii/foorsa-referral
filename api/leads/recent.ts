@@ -3,39 +3,24 @@ import { Pool } from 'pg';
 
 let pool: Pool | null = null;
 function getPool(): Pool {
-  if (!pool) {
-    pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 3,
-    });
-  }
+  if (!pool) { pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 }); }
   return pool;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const p = getPool();
     const result = await p.query(`
-      SELECT 
-        l.*,
-        u.first_name,
-        u.last_name,
-        u.email as ambassador_email,
-        u.referral_code
+      SELECT l.*, u.first_name, u.last_name, u.referral_code
       FROM ref_leads l
       LEFT JOIN ref_users u ON l.user_id = u.id
       WHERE l.deleted_at IS NULL
       ORDER BY l.created_at DESC
+      LIMIT 20
     `);
-
     return res.status(200).json(result.rows);
   } catch (error: any) {
-    console.error('Get all leads error:', error);
     return res.status(500).json({ error: error.message });
   }
 }
