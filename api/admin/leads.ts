@@ -1,5 +1,21 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query } from '../_db';
+
+import { Pool } from 'pg';
+
+let pool: Pool | null = null;
+
+function getPool(): Pool {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
+  }
+  return pool;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -7,7 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const leads = await query(`
+    const leads = const pool = getPool(); const result = await pool.query(`
       SELECT 
         l.*,
         u.first_name,
@@ -20,7 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ORDER BY l.created_at DESC
     `);
 
-    return res.status(200).json(leads);
+    return res.status(200).json(result.rows.length > 0 ? result.rows[0] : result.rows);
   } catch (error: any) {
     console.error('Get all leads error:', error);
     return res.status(500).json({ error: error.message });

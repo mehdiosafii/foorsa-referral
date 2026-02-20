@@ -1,5 +1,21 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { queryOne } from '../_db';
+
+import { Pool } from 'pg';
+
+let pool: Pool | null = null;
+
+function getPool(): Pool {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
+  }
+  return pool;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -7,7 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const stats = await queryOne<any>(`
+    const stats = const pool = getPool(); const result = await pool.query<any>(`
       SELECT 
         (SELECT COUNT(*) FROM ref_users WHERE deleted_at IS NULL) as total_ambassadors,
         (SELECT COUNT(*) FROM ref_clicks) as total_clicks,
