@@ -37,7 +37,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ORDER BY l.created_at DESC
     `);
 
-    return res.status(200).json(result.rows);
+    const leads = result.rows.map((r: any) => ({
+      id: r.id,
+      userId: r.user_id,
+      fullName: r.full_name,
+      email: r.email,
+      phone: r.phone,
+      whatsappNumber: r.whatsapp_number,
+      age: r.age,
+      preferredProgram: r.preferred_program,
+      preferredCity: r.preferred_city,
+      message: r.message,
+      status: r.status,
+      createdAt: r.created_at,
+      deletedAt: r.deleted_at,
+      userName: r.first_name ? `${r.first_name} ${r.last_name || ''}`.trim() : '',
+      ambassadorEmail: r.ambassador_email,
+      referralCode: r.referral_code,
+    }));
+    return res.status(200).json(leads);
   } catch (error: any) {
     console.error('Get all leads error:', error);
     return res.status(500).json({ error: error.message });

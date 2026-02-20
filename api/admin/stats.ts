@@ -38,6 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const stats = result.rows[0];
     return res.status(200).json({
       totalAmbassadors: parseInt(stats.total_ambassadors),
+      totalUsers: parseInt(stats.total_ambassadors),
       totalClicks: parseInt(stats.total_clicks),
       totalLeads: parseInt(stats.total_leads),
       totalConversions: parseInt(stats.total_conversions),

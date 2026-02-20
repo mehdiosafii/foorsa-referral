@@ -36,7 +36,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         GROUP BY u.id
         ORDER BY u.created_at DESC
       `);
-      return res.status(200).json(result.rows);
+      const users = result.rows.map((r: any) => ({
+        id: r.id,
+        firstName: r.first_name,
+        lastName: r.last_name,
+        email: r.email,
+        phone: r.phone,
+        referralCode: r.referral_code,
+        isAdmin: r.is_admin,
+        instagramUrl: r.instagram_url,
+        youtubeUrl: r.youtube_url,
+        tiktokUrl: r.tiktok_url,
+        instagramFollowers: r.instagram_followers,
+        youtubeFollowers: r.youtube_followers,
+        tiktokFollowers: r.tiktok_followers,
+        createdAt: r.created_at,
+        stats: {
+          clicks: r.total_clicks || 0,
+          leads: r.total_leads || 0,
+          conversions: r.total_conversions || 0,
+        },
+      }));
+      return res.status(200).json(users);
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
