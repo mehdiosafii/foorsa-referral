@@ -5,23 +5,20 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
-import { CheckCircle2, Phone, Mail, Clock, ArrowRight, Loader2, MessageCircle } from "lucide-react";
+import { CheckCircle2, Phone, Mail, Clock, Loader2 } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 const leadFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
   phone: z.string().min(8, "Please enter a valid phone number"),
+  email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
   preferredProgram: z.string().optional(),
-  preferredCity: z.string().optional(),
-  message: z.string().optional(),
 });
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
@@ -39,22 +36,12 @@ const programs = [
   "Architecture",
   "Pharmacy",
   "Dentistry",
-  "Law",
-  "Arts & Design",
+  "Chinese Language",
   "Other"
 ];
 
-const cities = [
-  "Beijing",
-  "Shanghai",
-  "Nanjing",
-  "Hangzhou",
-  "Guangzhou",
-  "Chengdu",
-  "Xi'an",
-  "Wuhan",
-  "Other"
-];
+// WhatsApp business number
+const WHATSAPP_NUMBER = "212537911271";
 
 export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectionProps) {
   const { toast } = useToast();
@@ -64,53 +51,30 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
     resolver: zodResolver(leadFormSchema),
     defaultValues: {
       fullName: "",
-      email: "",
       phone: "+212 ",
+      email: "",
       preferredProgram: "",
-      preferredCity: "",
-      message: "",
     },
   });
 
-  // WhatsApp business number
-  const WHATSAPP_NUMBER = "212537911271";
-  
-  // Build WhatsApp message from form data - Giveaway entry
   const buildWhatsAppMessage = (data: LeadFormData) => {
     const normalizedPhone = normalizePhoneNumber(data.phone);
     const parts = [
-      `مرحبا، أريد المشاركة في المسابقة`,
+      `Hi, I'm interested in studying in China!`,
       ``,
-      `الاسم: ${data.fullName}`,
-      `الهاتف: ${normalizedPhone}`,
-      `البريد: ${data.email}`,
+      `Name: ${data.fullName}`,
+      `Phone: ${normalizedPhone}`,
     ];
-    
-    if (data.preferredProgram) {
-      parts.push(`التخصص: ${data.preferredProgram}`);
-    }
-    if (data.preferredCity) {
-      parts.push(`المدينة المفضلة: ${data.preferredCity}`);
-    }
-    if (data.message) {
-      parts.push(``, `ملاحظة: ${data.message}`);
-    }
-    
-    // Add source information - Ambassador with name
+    if (data.email) parts.push(`Email: ${data.email}`);
+    if (data.preferredProgram) parts.push(`Program: ${data.preferredProgram}`);
     if (referralCode) {
-      if (ambassadorName) {
-        parts.push(``, `المصدر: سفير - ${ambassadorName} (${referralCode})`);
-      } else {
-        parts.push(``, `المصدر: سفير (${referralCode})`);
-      }
+      parts.push(``, `Referred by: ${ambassadorName || referralCode}`);
     }
-    
     return parts.join('\n');
   };
 
   const submitMutation = useMutation({
     mutationFn: async (data: LeadFormData) => {
-      // Normalize phone before saving
       const normalizedData = {
         ...data,
         phone: normalizePhoneNumber(data.phone),
@@ -119,43 +83,32 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
       return await apiRequest("POST", "/api/leads", normalizedData);
     },
     onSuccess: (_, data) => {
-      // Fire Google Ads conversion event
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-10979569577/CJQRCMGTuLQZEKnfu_Mo'
         });
       }
-      
-      // Build WhatsApp URL and redirect
       const message = buildWhatsAppMessage(data);
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-      
-      // Open WhatsApp in new tab
-      window.open(whatsappUrl, "_blank");
-      
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
       setSubmitted(true);
       toast({
-        title: "تم التسجيل!",
-        description: "أرسل الرسالة عبر واتساب للمشاركة في المسابقة.",
+        title: "Registered!",
+        description: "Send the WhatsApp message to complete your registration.",
       });
     },
     onError: (error: any, data) => {
-      // Check if this is a duplicate submission - still open WhatsApp for giveaway entry
-      if (error?.duplicate || error?.message?.includes("already been submitted") || error?.error?.includes("مسجل مسبقاً")) {
-        // Still open WhatsApp so they can send the message
+      if (error?.duplicate || error?.message?.includes("already been submitted") || error?.error?.includes("already")) {
         const message = buildWhatsAppMessage(data);
-        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, "_blank");
-        
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
         setSubmitted(true);
         toast({
-          title: "مرحباً بك مجدداً!",
-          description: "أرسل الرسالة عبر واتساب للمشاركة في المسابقة",
+          title: "Welcome back!",
+          description: "Send the WhatsApp message to continue.",
         });
       } else {
         toast({
-          title: "حدث خطأ",
-          description: "يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.",
+          title: "Something went wrong",
+          description: "Please try again or contact us directly.",
           variant: "destructive",
         });
       }
@@ -175,20 +128,20 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
               <SiWhatsapp className="h-10 w-10 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">
-              أرسل الرسالة عبر واتساب!
+              Send the message on WhatsApp!
             </h2>
             <p className="text-xl text-white/90 mb-6">
-              تم فتح واتساب في نافذة جديدة. يرجى الضغط على "إرسال" للمشاركة في المسابقة.
+              WhatsApp has been opened in a new tab. Please tap "Send" to complete your registration.
             </p>
             <Button
               onClick={() => {
-                const message = `مرحبا، أريد المشاركة في المسابقة`;
+                const message = `Hi, I'm interested in studying in China!`;
                 window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
               }}
               className="bg-[#25D366] text-white hover:bg-[#25D366]/90"
             >
               <SiWhatsapp className="mr-2 h-5 w-5" />
-              افتح واتساب مرة أخرى
+              Open WhatsApp Again
             </Button>
           </div>
         </div>
@@ -221,7 +174,6 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
                           <Input 
                             placeholder="Enter your full name" 
                             className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
-                            data-testid="input-fullname"
                             {...field} 
                           />
                         </FormControl>
@@ -230,120 +182,63 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
                     )}
                   />
                   
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Email *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email"
-                              placeholder="your@email.com" 
-                              className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
-                              data-testid="input-email"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Phone *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="+212 6XX XXX XXX" 
-                              className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
-                              data-testid="input-phone"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="preferredProgram"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Preferred Program</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger 
-                                className="bg-white/10 border-white/30 text-white"
-                                data-testid="select-program"
-                              >
-                                <SelectValue placeholder="Select program" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {programs.map((program) => (
-                                <SelectItem key={program} value={program}>
-                                  {program}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="preferredCity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Preferred City</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger 
-                                className="bg-white/10 border-white/30 text-white"
-                                data-testid="select-city"
-                              >
-                                <SelectValue placeholder="Select city" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {cities.map((city) => (
-                                <SelectItem key={city} value={city}>
-                                  {city}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
                   <FormField
                     control={form.control}
-                    name="message"
+                    name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Message (Optional)</FormLabel>
+                        <FormLabel className="text-white">Phone (WhatsApp) *</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Tell us about your goals and any questions you have..."
-                            className="bg-white/10 border-white/30 text-white placeholder:text-white/50 resize-none"
-                            rows={3}
-                            data-testid="textarea-message"
+                          <Input 
+                            placeholder="+212 6XX XXX XXX" 
+                            className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
                             {...field} 
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email"
+                            placeholder="your@email.com (optional)" 
+                            className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="preferredProgram"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Preferred Program</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-white/10 border-white/30 text-white">
+                              <SelectValue placeholder="Select program (optional)" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {programs.map((program) => (
+                              <SelectItem key={program} value={program}>
+                                {program}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -354,23 +249,22 @@ export function LeadFormSection({ referralCode, ambassadorName }: LeadFormSectio
                     size="lg"
                     className="w-full bg-[#25D366] text-white hover:bg-[#25D366]/90 font-semibold"
                     disabled={submitMutation.isPending}
-                    data-testid="button-submit-lead"
                   >
                     {submitMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        جاري الإرسال...
+                        Submitting...
                       </>
                     ) : (
                       <>
                         <SiWhatsapp className="mr-2 h-5 w-5" />
-                        سجل الآن
+                        Register Now
                       </>
                     )}
                   </Button>
                   
                   <p className="text-xs text-center mt-3 text-white/70">
-                    بالضغط على الزر، تشارك تلقائياً في المسابقة ويمكنك طرح أي سؤال حول الدراسة في الصين - استشارة مجانية!
+                    Free consultation — no obligations. We'll contact you within 24 hours.
                   </p>
                 </form>
               </Form>
