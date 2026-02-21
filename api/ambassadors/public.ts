@@ -42,7 +42,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ORDER BY created_at DESC
     `);
 
-    return res.status(200).json(result.rows);
+    const ambassadors = result.rows.map((r: any) => ({
+      id: r.id,
+      firstName: r.first_name,
+      lastName: r.last_name,
+      profileImageUrl: r.profile_image_url,
+      referralCode: r.referral_code,
+      instagramUrl: r.instagram_url,
+      youtubeUrl: r.youtube_url,
+      tiktokUrl: r.tiktok_url,
+      instagramFollowers: r.instagram_followers,
+      youtubeFollowers: r.youtube_followers,
+      tiktokFollowers: r.tiktok_followers,
+    }));
+    return res.status(200).json(ambassadors);
   } catch (error: any) {
     console.error('Get ambassadors error:', error);
     return res.status(500).json({ error: error.message });

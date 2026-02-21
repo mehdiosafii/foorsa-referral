@@ -43,7 +43,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ORDER BY total_leads DESC, total_clicks DESC
       LIMIT 50
     `);
-    return res.status(200).json(result.rows);
+    const leaderboard = result.rows.map((r: any) => ({
+      userId: r.user_id,
+      firstName: r.first_name,
+      lastName: r.last_name,
+      profileImageUrl: r.profile_image_url,
+      totalClicks: r.total_clicks,
+      totalLeads: r.total_leads,
+      totalConversions: r.total_conversions,
+      rank: r.rank,
+    }));
+    return res.status(200).json(leaderboard);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

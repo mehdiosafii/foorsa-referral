@@ -54,6 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         lastName: r.last_name,
         email: r.email,
         phone: r.phone,
+        profileImageUrl: r.profile_image_url,
         referralCode: r.referral_code,
         isAdmin: r.is_admin,
         instagramUrl: r.instagram_url,
