@@ -13,7 +13,7 @@ import foorsaLogo from "@assets/logo_official.png";
 
 export default function AmbassadorLogin() {
   const [, setLocation] = useLocation();
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
   const { toast } = useToast();
   
   const [email, setEmail] = useState("");
@@ -55,7 +55,7 @@ export default function AmbassadorLogin() {
   return (
     <div 
       className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      dir={dir}
+      dir="ltr"
       style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)' }}
     >
       <div 

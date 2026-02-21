@@ -25,15 +25,15 @@ interface Achievement {
   color: string;
 }
 
-export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants }: AchievementsBadgesProps) {
+export function AchievementsBadges({ stats, leaderboardEntry }: AchievementsBadgesProps) {
   const currentRank = leaderboardEntry?.rank || 999;
   
   const achievements: Achievement[] = [
     {
       id: "first_lead",
       icon: Star,
-      label: "أول خطوة",
-      description: "احصل على أول lead",
+      label: "First Step",
+      description: "Get your first lead",
       unlocked: stats.totalLeads >= 1,
       progress: Math.min(stats.totalLeads, 1),
       maxProgress: 1,
@@ -42,8 +42,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "five_leads",
       icon: Target,
-      label: "البداية القوية",
-      description: "احصل على 5 leads",
+      label: "Strong Start",
+      description: "Get 5 leads",
       unlocked: stats.totalLeads >= 5,
       progress: Math.min(stats.totalLeads, 5),
       maxProgress: 5,
@@ -52,8 +52,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "ten_leads",
       icon: Zap,
-      label: "متقدم",
-      description: "احصل على 10 leads",
+      label: "Advanced",
+      description: "Get 10 leads",
       unlocked: stats.totalLeads >= 10,
       progress: Math.min(stats.totalLeads, 10),
       maxProgress: 10,
@@ -62,8 +62,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "twenty_five_leads",
       icon: Rocket,
-      label: "نجم صاعد",
-      description: "احصل على 25 lead",
+      label: "Rising Star",
+      description: "Get 25 leads",
       unlocked: stats.totalLeads >= 25,
       progress: Math.min(stats.totalLeads, 25),
       maxProgress: 25,
@@ -72,8 +72,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "fifty_leads",
       icon: Trophy,
-      label: "أسطورة",
-      description: "احصل على 50 lead",
+      label: "Legend",
+      description: "Get 50 leads",
       unlocked: stats.totalLeads >= 50,
       progress: Math.min(stats.totalLeads, 50),
       maxProgress: 50,
@@ -82,8 +82,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "first_conversion",
       icon: Gift,
-      label: "أول نجاح",
-      description: "حقق أول تحويل",
+      label: "First Win",
+      description: "Get your first conversion",
       unlocked: stats.totalConversions >= 1,
       progress: Math.min(stats.totalConversions, 1),
       maxProgress: 1,
@@ -92,8 +92,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
     {
       id: "five_conversions",
       icon: Users,
-      label: "مؤثر",
-      description: "حقق 5 تحويلات",
+      label: "Influencer",
+      description: "Get 5 conversions",
       unlocked: stats.totalConversions >= 5,
       progress: Math.min(stats.totalConversions, 5),
       maxProgress: 5,
@@ -103,39 +103,39 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
       id: "top_ten",
       icon: Medal,
       label: "Top 10",
-      description: "كن ضمن أفضل 10",
+      description: "Reach the top 10",
       unlocked: currentRank <= 10,
       color: "bg-indigo-500",
     },
     {
       id: "top_three",
       icon: Award,
-      label: "المنصة",
-      description: "كن ضمن أفضل 3",
+      label: "Podium",
+      description: "Reach the top 3",
       unlocked: currentRank <= 3,
       color: "bg-amber-500",
     },
     {
       id: "champion",
       icon: Crown,
-      label: "البطل",
-      description: "احتل المركز الأول",
+      label: "Champion",
+      description: "Reach #1",
       unlocked: currentRank === 1,
       color: "bg-accent",
     },
     {
       id: "high_conversion",
       icon: TrendingUp,
-      label: "معدل عالي",
-      description: "حقق معدل تحويل 20%+",
+      label: "High Rate",
+      description: "Achieve 20%+ conversion rate",
       unlocked: stats.conversionRate >= 20,
       color: "bg-emerald-500",
     },
     {
       id: "on_fire",
       icon: Flame,
-      label: "مشتعل",
-      description: "100+ نقرة",
+      label: "On Fire",
+      description: "100+ clicks",
       unlocked: stats.totalClicks >= 100,
       progress: Math.min(stats.totalClicks, 100),
       maxProgress: 100,
@@ -154,8 +154,8 @@ export function AchievementsBadges({ stats, leaderboardEntry, totalParticipants 
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">الإنجازات</h3>
-            <p className="text-xs text-muted-foreground">اجمع الشارات وتميز</p>
+            <h3 className="font-semibold text-foreground">Achievements</h3>
+            <p className="text-xs text-muted-foreground">Collect badges and stand out</p>
           </div>
         </div>
         <Badge className="bg-primary/20 text-primary border-0">

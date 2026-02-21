@@ -451,7 +451,7 @@ export default function AdminOffers() {
                     <FormItem>
                       <FormLabel>Title (Arabic)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="العنوان بالعربية" dir="rtl" />
+                        <Input {...field} placeholder="Arabic Title" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -494,7 +494,7 @@ export default function AdminOffers() {
                     <FormItem>
                       <FormLabel>Description (Arabic)</FormLabel>
                       <FormControl>
-                        <Textarea {...field} placeholder="الوصف بالعربية" rows={2} dir="rtl" />
+                        <Textarea {...field} placeholder="Arabic Description" rows={2} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -60,11 +60,11 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
 
   const getMotivationalMessage = (rank: number, total: number) => {
     const percentile = ((total - rank + 1) / total) * 100;
-    if (rank === 1) return { message: "أنت البطل! حافظ على الصدارة", icon: Crown, color: "text-accent" };
-    if (rank <= 3) return { message: "أنت في المراكز الأولى! استمر", icon: Star, color: "text-accent" };
-    if (percentile >= 75) return { message: "أداء ممتاز! قريب من القمة", icon: TrendingUp, color: "text-green-500" };
-    if (percentile >= 50) return { message: "في منتصف الطريق! يمكنك التقدم", icon: Target, color: "text-blue-500" };
-    return { message: "لديك فرصة كبيرة للصعود!", icon: Zap, color: "text-orange-500" };
+    if (rank === 1) return { message: "You're the champion! Stay on top", icon: Crown, color: "text-accent" };
+    if (rank <= 3) return { message: "You're in the top ranks! Keep going", icon: Star, color: "text-accent" };
+    if (percentile >= 75) return { message: "Excellent performance! Close to the top", icon: TrendingUp, color: "text-green-500" };
+    if (percentile >= 50) return { message: "Halfway there! You can move up", icon: Target, color: "text-blue-500" };
+    return { message: "Great opportunity to climb the ranks!", icon: Zap, color: "text-orange-500" };
   };
 
   const motivation = currentRank > 0 ? getMotivationalMessage(currentRank, totalParticipants) : null;
@@ -77,7 +77,7 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
         </div>
         <div>
           <h3 className="font-semibold text-foreground">{t.dashboard.leaderboard.title}</h3>
-          <p className="text-xs text-muted-foreground">تنافس مع السفراء الآخرين</p>
+          <p className="text-xs text-muted-foreground">Compete with other ambassadors</p>
         </div>
       </div>
 
@@ -86,11 +86,11 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
-              <span className="font-semibold text-foreground">ترتيبك الحالي</span>
+              <span className="font-semibold text-foreground">Your Current Rank</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-3xl font-bold text-primary">#{currentRank}</span>
-              <span className="text-sm text-muted-foreground">من {totalParticipants}</span>
+              <span className="text-sm text-muted-foreground">of {totalParticipants}</span>
             </div>
           </div>
           
@@ -104,8 +104,8 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
           {currentRank > 1 && nextRankEntry && leadsToNextRank > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">للوصول للمركز #{currentRank - 1}</span>
-                <span className="font-medium text-primary">{leadsToNextRank} leads متبقية</span>
+                <span className="text-muted-foreground">To reach rank #{currentRank - 1}</span>
+                <span className="font-medium text-primary">{leadsToNextRank} leads remaining</span>
               </div>
               <Progress 
                 value={Math.max(0, 100 - (leadsToNextRank / Math.max(1, currentUserEntry.totalLeads + leadsToNextRank)) * 100)} 
@@ -117,7 +117,7 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
           {currentRank === 1 && (
             <div className="flex items-center gap-2 text-accent">
               <Flame className="h-4 w-4" />
-              <span className="text-sm font-medium">أنت في الصدارة! لا تفقد مركزك</span>
+              <span className="text-sm font-medium">You're in the lead! Don't lose your spot</span>
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ export function Leaderboard({ entries, currentUserId, isLoading }: LeaderboardPr
                 ) : (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Lock className="h-3.5 w-3.5" />
-                    <span className="text-xs">مخفي</span>
+                    <span className="text-xs">Hidden</span>
                   </div>
                 )}
               </div>

@@ -18,7 +18,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { normalizePhoneNumber } from "@/lib/phoneUtils";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { GraduationCap, Star, MapPin, Building2, Clock, Bell, ShieldCheck, Plane, Users, HeartHandshake, Languages, Home, CheckCircle2, FileText, Send, Award, ChevronDown, Quote, Play } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
@@ -50,42 +49,30 @@ const universityDeadlines = [
 ];
 
 const moroccanCities = [
-  "الدار البيضاء", "الرباط", "مراكش", "فاس", "طنجة", "أكادير", 
-  "مكناس", "وجدة", "القنيطرة", "تطوان", "سلا", "الناظور",
-  "الجديدة", "بني ملال", "خريبكة", "آسفي", "الحسيمة", "العيون",
-  "الداخلة", "تازة", "سطات", "برشيد", "المحمدية", "خنيفرة",
-  "ورزازات", "الراشيدية", "تنغير", "إفران", "ميدلت", "أزرو",
-  "تارودانت", "تيزنيت", "كلميم", "طانطان", "الصويرة", "شفشاون",
-  "العرائش", "أصيلة", "وزان", "الفقيه بن صالح", "قلعة السراغنة"
-];
-
-const moroccanCitiesFr = [
-  "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir",
-  "Meknès", "Oujda", "Kénitra", "Tétouan", "Salé", "Nador",
-  "El Jadida", "Béni Mellal", "Khouribga", "Safi", "Al Hoceima", "Laâyoune",
-  "Dakhla", "Taza", "Settat", "Berrechid", "Mohammedia", "Khénifra"
-];
-
-const moroccanCitiesEn = [
   "Casablanca", "Rabat", "Marrakech", "Fez", "Tangier", "Agadir",
   "Meknes", "Oujda", "Kenitra", "Tetouan", "Sale", "Nador",
   "El Jadida", "Beni Mellal", "Khouribga", "Safi", "Al Hoceima", "Laayoune",
-  "Dakhla", "Taza", "Settat", "Berrechid", "Mohammedia", "Khenifra"
+  "Dakhla", "Taza", "Settat", "Berrechid", "Mohammedia", "Khenifra",
+  "Ouarzazate", "Errachidia", "Tinghir", "Ifrane", "Midelt", "Azrou",
+  "Taroudant", "Tiznit", "Guelmim", "Tan-Tan", "Essaouira", "Chefchaouen",
+  "Larache", "Asilah", "Ouezzane", "Fquih Ben Salah", "Kelaat Sraghna"
 ];
 
+
+
 const moroccanNames = [
-  "يوسف", "محمد", "أمين", "آدم", "إيمان", "سارة", "هدى", "ليلى",
-  "عمر", "ياسين", "أيوب", "زكرياء", "مريم", "فاطمة", "نورة", "ريم",
-  "أحمد", "خالد", "عبدالله", "حمزة", "إدريس", "يونس", "بلال", "سعيد",
-  "عثمان", "طارق", "كريم", "رشيد", "نبيل", "جمال", "عادل", "حسن",
-  "إبراهيم", "سليمان", "عبدالرحمن", "عبدالكريم", "مصطفى", "هشام", "رياض", "عزيز",
-  "هناء", "سلمى", "نادية", "لطيفة", "حنان", "سناء", "نجاة", "وفاء",
-  "أسماء", "خديجة", "زينب", "عائشة", "حليمة", "سكينة", "رقية", "صفية",
-  "أمينة", "سهام", "بسمة", "إكرام", "سميرة", "فتيحة", "نجوى", "منى",
-  "وليد", "فؤاد", "أنس", "عماد", "صلاح", "توفيق", "مراد", "سمير",
-  "رضوان", "عبداللطيف", "عبدالإله", "المهدي", "بدر", "منير", "عمران", "زياد",
-  "ياسمين", "لمياء", "سارة", "دنيا", "شيماء", "هاجر", "نور", "ملاك",
-  "رحمة", "جهاد", "إسراء", "آلاء", "روعة", "غزلان", "إلهام", "ابتسام"
+   "Youssef", "Mohammed", "Amine", "Adam", "Imane", "Sara", "Houda", "Leila",
+   "Omar", "Yassine", "Ayoub", "Zakariae", "Maryam", "Fatima", "Noura", "Rim",
+   "Ahmed", "Khalid", "Abdullah", "Hamza", "Idriss", "Younes", "Bilal", "Said",
+   "Othman", "Tarik", "Karim", "Rachid", "Nabil", "Jamal", "Adil", "Hassan",
+   "Ibrahim", "Soulaimane", "Abderrahman", "Abdelkarim", "Mustapha", "Hicham", "Riad", "Aziz",
+   "Hanae", "Salma", "Nadia", "Latifa", "Hanan", "Sanaa", "Najat", "Wafaa",
+   "Asma", "Khadija", "Zainab", "Aicha", "Halima", "Soukaina", "Roqaya", "Safia",
+   "Amina", "Siham", "Basma", "Ikram", "Samira", "Fatiha", "Najwa", "Mouna",
+   "Walid", "Fouad", "Anas", "Imad", "Salah", "Tawfik", "Mourad", "Samir",
+   "Redouane", "Abdellatif", "Abdellilah", "El Mehdi", "Badr", "Mounir", "Imran", "Ziad",
+   "Yasmine", "Lamiae", "Sara", "Dounia", "Chaimae", "Hajar", "Nour", "Malak",
+   "Rahma", "Jihad", "Israa", "Alae", "Rawaa", "Ghizlane", "Ilham", "Ibtissam"
 ];
 
 const youtubeShorts = [
@@ -291,7 +278,9 @@ function PressMarquee({ title }: { title: string }) {
 }
 
 export default function LandingPage({ referralCode }: LandingPageProps) {
-  const { t, dir, language } = useLanguage();
+  const { t } = useLanguage();
+  const language = "en" as const;
+  const dir = "ltr" as const;
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [countdown, setCountdown] = useState(getTimeRemaining(getNextDeadline()?.date || new Date()));
@@ -310,12 +299,12 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
   const shortsRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
 
-  const cities = language === 'ar' ? moroccanCities : language === 'fr' ? moroccanCitiesFr : moroccanCitiesEn;
+  const cities = moroccanCities;
 
   const leadFormSchema = useMemo(() => z.object({
-    fullName: z.string().min(2, language === 'ar' ? "الاسم الكامل مطلوب" : language === 'fr' ? "Le nom complet est requis" : "Full name is required"),
-    whatsappNumber: z.string().min(10, language === 'ar' ? "رقم الواتساب مطلوب" : language === 'fr' ? "Le numéro WhatsApp est requis" : "WhatsApp number is required"),
-  }), [language]);
+    fullName: z.string().min(2, "Full name is required"),
+    whatsappNumber: z.string().min(10, "WhatsApp number is required"),
+  }), []);
 
   type LeadFormData = z.infer<typeof leadFormSchema>;
 
@@ -585,29 +574,27 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
   const buildWhatsAppMessage = (data: LeadFormData) => {
     const normalizedPhone = normalizePhoneNumber(data.whatsappNumber);
     const parts = [
-      language === 'ar' ? `مرحبا، أريد المشاركة في المسابقة` 
-        : language === 'fr' ? `Bonjour, je veux participer au concours`
-        : `Hello, I want to enter the giveaway`,
+      `Hello, I want to enter the giveaway`,
       ``,
-      `${language === 'ar' ? 'الاسم' : language === 'fr' ? 'Nom' : 'Name'}: ${data.fullName}`,
-      `${language === 'ar' ? 'واتساب' : 'WhatsApp'}: ${normalizedPhone}`,
+      `${'Name'}: ${data.fullName}`,
+      `WhatsApp: ${normalizedPhone}`,
     ];
     
     // Add source information - Ambassador or Tracking Link
     const effectiveCode = getEffectiveReferralCode();
     if (effectiveCode && effectiveCode !== 'direct') {
-      const sourceLabel = language === 'ar' ? 'المصدر' : language === 'fr' ? 'Source' : 'Source';
+      const sourceLabel = 'Source';
       if (ambassadorName) {
-        parts.push(``, `${sourceLabel}: ${language === 'ar' ? 'سفير' : language === 'fr' ? 'Ambassadeur' : 'Ambassador'} - ${ambassadorName} (${effectiveCode})`);
+        parts.push(``, `${sourceLabel}: ${'Ambassador'} - ${ambassadorName} (${effectiveCode})`);
       } else {
-        parts.push(``, `${sourceLabel}: ${language === 'ar' ? 'سفير' : language === 'fr' ? 'Ambassadeur' : 'Ambassador'} (${effectiveCode})`);
+        parts.push(``, `${sourceLabel}: ${'Ambassador'} (${effectiveCode})`);
       }
     } else if (trackingCode) {
-      const sourceLabel = language === 'ar' ? 'المصدر' : language === 'fr' ? 'Source' : 'Source';
+      const sourceLabel = 'Source';
       if (trackingLinkInfo) {
         parts.push(``, `${sourceLabel}: ${trackingLinkInfo.platform} - ${trackingLinkInfo.name} (${trackingCode})`);
       } else {
-        parts.push(``, `${sourceLabel}: ${language === 'ar' ? 'رابط تتبع' : language === 'fr' ? 'Lien de suivi' : 'Tracking link'} (${trackingCode})`);
+        parts.push(``, `${sourceLabel}: ${'Tracking link'} (${trackingCode})`);
       }
     }
     
@@ -660,30 +647,22 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
     },
     onError: (error: any, data) => {
       // Check if this is a duplicate submission error - still open WhatsApp for giveaway entry
-      if (error?.duplicate || error?.message?.includes("already been submitted") || error?.error?.includes("مسجل مسبقاً")) {
+      if (error?.duplicate || error?.message?.includes("already been submitted") || error?.error?.includes("already registered")) {
         // Still open WhatsApp so they can send the message
         const message = buildWhatsAppMessage(data);
         const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, "_blank");
         
         toast({
-          title: language === 'ar' ? "مرحباً بك مجدداً!" : language === 'fr' ? "Bon retour!" : "Welcome back!",
-          description: language === 'ar' 
-            ? "أرسل الرسالة عبر واتساب للمشاركة في المسابقة" 
-            : language === 'fr'
-            ? "Envoyez le message WhatsApp pour participer au concours"
-            : "Send the WhatsApp message to enter the giveaway",
+          title: "Welcome back!",
+          description: "Send the WhatsApp message to enter the giveaway",
           variant: "default",
         });
         navigate("/shukran");
       } else {
         toast({
-          title: language === 'ar' ? "حدث خطأ" : language === 'fr' ? "Une erreur s'est produite" : "Something went wrong",
-          description: language === 'ar' 
-            ? "يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة" 
-            : language === 'fr'
-            ? "Veuillez réessayer ou nous contacter directement"
-            : "Please try again or contact us directly",
+          title: "Something went wrong",
+          description: "Please try again or contact us directly",
           variant: "destructive",
         });
       }
@@ -695,12 +674,7 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background" dir={dir}>
-      {/* Language Switcher - Fixed Top Right */}
-      <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-[60]">
-        <LanguageSwitcher />
-      </div>
-
+    <div className="min-h-screen bg-background" dir="ltr">
       {/* Countdown Banner - Sticky */}
       {currentDeadline && countdown && (
         <div className="sticky top-0 z-50 bg-[#EACA91] text-[#1a2744] py-2 md:py-2.5 px-3 md:px-4 shadow-sm" data-testid="countdown-banner">
@@ -714,13 +688,13 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
               </span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-sm sm:text-base" dir="ltr">
-              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{countdown.days}{language !== 'ar' ? 'd' : ''}</span>
+              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{countdown.days}{'d'}</span>
               <span className="text-xs sm:text-sm">:</span>
-              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.hours).padStart(2, '0')}{language !== 'ar' ? 'h' : ''}</span>
+              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.hours).padStart(2, '0')}{'h'}</span>
               <span className="text-xs sm:text-sm">:</span>
-              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.minutes).padStart(2, '0')}{language !== 'ar' ? 'm' : ''}</span>
+              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.minutes).padStart(2, '0')}{'m'}</span>
               <span className="text-xs sm:text-sm">:</span>
-              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.seconds).padStart(2, '0')}{language !== 'ar' ? 's' : ''}</span>
+              <span className="bg-[#1a2744]/20 px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">{String(countdown.seconds).padStart(2, '0')}{'s'}</span>
             </div>
           </div>
         </div>
@@ -807,7 +781,7 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
                 {t.form.subtitle}
               </p>
             </div>
-            <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative" key={language}>
+            <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative" >
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
@@ -861,17 +835,13 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
                       <SiWhatsapp className="h-5 w-5" />
                       {submitMutation.isPending 
                         ? t.form.submitting 
-                        : (language === 'ar' ? 'سجل الآن' : language === 'fr' ? 'Inscrivez-vous' : 'Enter Now')
+                        : ('Enter Now')
                       }
                     </span>
                   </ShinyButton>
 
                   <p className="text-xs text-center mt-3 text-muted-foreground">
-                    {language === 'ar' 
-                      ? 'بالضغط على الزر، تشارك تلقائياً في المسابقة ويمكنك طرح أي سؤال حول الدراسة في الصين - استشارة مجانية!' 
-                      : language === 'fr'
-                      ? 'En cliquant, vous participez automatiquement au concours et pouvez poser toutes vos questions sur les études en Chine - consultation gratuite!'
-                      : 'By clicking, you auto-enter the giveaway and can ask any questions about studying in China - free consultation!'}
+                    By clicking, you auto-enter the giveaway and can ask any questions about studying in China - free consultation!
                   </p>
 
                   {submitMutation.isError && (
@@ -895,14 +865,14 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
         <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
           <div className="text-center mb-8">
             <Badge className="bg-[#EACA91] text-[#1a2744] hover:bg-[#EACA91]/90 mb-4">
-              {language === 'ar' ? 'مقاعد محدودة' : language === 'fr' ? 'Places limitées' : 'Limited Seats'}
+              {'Limited Seats'}
             </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
-              {language === 'ar' ? 'ادرس في إحدى أفضل الجامعات الصينية' : language === 'fr' ? 'Étudiez dans l\'une des meilleures universités chinoises' : 'Study at One of China\'s Best Universities'}
+              Study at One of China's Best Universities
             </h2>
             <div className="flex items-center justify-center gap-2 text-white/80">
               <Clock className="h-4 w-4" />
-              <span>{language === 'ar' ? 'آخر أجل للتسجيل:' : language === 'fr' ? 'Date limite:' : 'Deadline:'}</span>
+              <span>{'Deadline:'}</span>
               <div className="flex items-center gap-1.5 font-mono text-sm" dir="ltr">
                 <span className="bg-white/20 px-2 py-1 rounded">{countdown?.days || 0}d</span>
                 <span>:</span>
@@ -932,19 +902,19 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-center border border-white/10">
               <div className="text-3xl font-bold text-[#EACA91] mb-2">TOP 100</div>
               <p className="text-white/80 text-sm">
-                {language === 'ar' ? 'من أفضل 100 جامعة من بين 3000+ في الصين' : language === 'fr' ? 'Top 100 sur 3000+ universités en Chine' : 'Top 100 out of 3000+ Universities in China'}
+                {'Top 100 out of 3000+ Universities in China'}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-center border border-white/10">
               <div className="text-3xl font-bold text-[#EACA91] mb-2">1953</div>
               <p className="text-white/80 text-sm">
-                {language === 'ar' ? 'تأسست منذ أكثر من 70 سنة' : language === 'fr' ? 'Fondée il y a plus de 70 ans' : 'Established over 70 years ago'}
+                {'Established over 70 years ago'}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-center border border-white/10">
               <div className="text-3xl font-bold text-[#EACA91] mb-2">100%</div>
               <p className="text-white/80 text-sm">
-                {language === 'ar' ? 'منحة كاملة متاحة' : language === 'fr' ? 'Bourse complète disponible' : 'Full Scholarship Available'}
+                {'Full Scholarship Available'}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 text-center border border-white/10">
@@ -952,7 +922,7 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
                 <MapPin className="inline h-7 w-7" />
               </div>
               <p className="text-white/80 text-sm">
-                {language === 'ar' ? 'تشينغداو - مدينة ساحلية جميلة' : language === 'fr' ? 'Qingdao - Belle ville côtière' : 'Qingdao - Beautiful Coastal City'}
+                {'Qingdao - Beautiful Coastal City'}
               </p>
             </div>
           </div>
@@ -964,7 +934,7 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
               className="bg-[#EACA91] text-[#1a2744] hover:bg-[#EACA91]/90 font-semibold px-8"
               data-testid="button-upc-apply"
             >
-              {language === 'ar' ? 'سجّل الآن - المقاعد محدودة' : language === 'fr' ? 'Inscrivez-vous - Places limitées' : 'Apply Now - Limited Seats'}
+              {'Apply Now - Limited Seats'}
             </Button>
           </div>
         </div>
@@ -989,7 +959,7 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-foreground text-lg sm:text-xl">+3000</span>
-                <span className="text-muted-foreground text-xs">{language === 'ar' ? 'طالب' : language === 'fr' ? 'étudiants' : 'students'}</span>
+                <span className="text-muted-foreground text-xs">{'students'}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 shadow-sm">
@@ -1065,10 +1035,10 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
             </div>
             
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
-              {language === 'ar' ? 'تقييمات حقيقية من Google' : language === 'fr' ? 'Avis Réels de Google' : 'Real Google Reviews'}
+              {'Real Google Reviews'}
             </h2>
             <p className="text-muted-foreground text-sm sm:text-lg max-w-xl mx-auto px-2">
-              {language === 'ar' ? 'شاهد ما يقوله طلابنا عن تجربتهم مع فرصة' : language === 'fr' ? 'Découvrez ce que nos étudiants disent de Foorsa' : 'See what our students say about their experience with Foorsa'}
+              {'See what our students say about their experience with Foorsa'}
             </p>
           </div>
           
@@ -1313,26 +1283,14 @@ export default function LandingPage({ referralCode }: LandingPageProps) {
                   const effectiveCode = getEffectiveReferralCode();
                   if (effectiveCode && effectiveCode !== 'direct') {
                     const ambassadorInfo = ambassadorName ? `${ambassadorName} (${effectiveCode})` : effectiveCode;
-                    return language === 'ar' 
-                      ? `مرحبا، أريد المشاركة في المسابقة.\n\nالمصدر: سفير - ${ambassadorInfo}` 
-                      : language === 'fr' 
-                      ? `Bonjour, je veux participer au concours.\n\nSource: Ambassadeur - ${ambassadorInfo}`
-                      : `Hello, I want to enter the giveaway.\n\nSource: Ambassador - ${ambassadorInfo}`;
+                    return `Hello, I want to enter the giveaway.\n\nSource: Ambassador - ${ambassadorInfo}`;
                   } else if (trackingCode) {
                     const trackInfo = trackingLinkInfo 
                       ? `${trackingLinkInfo.platform} - ${trackingLinkInfo.name} (${trackingCode})` 
                       : trackingCode;
-                    return language === 'ar' 
-                      ? `مرحبا، أريد المشاركة في المسابقة.\n\nالمصدر: ${trackInfo}` 
-                      : language === 'fr' 
-                      ? `Bonjour, je veux participer au concours.\n\nSource: ${trackInfo}`
-                      : `Hello, I want to enter the giveaway.\n\nSource: ${trackInfo}`;
+                    return `Hello, I want to enter the giveaway.\n\nSource: ${trackInfo}`;
                   } else {
-                    return language === 'ar' 
-                      ? 'مرحبا، أريد المشاركة في المسابقة.'
-                      : language === 'fr' 
-                      ? 'Bonjour, je veux participer au concours.'
-                      : 'Hello, I want to enter the giveaway.';
+                    return 'Hello, I want to enter the giveaway.';
                   }
                 })()
               )}`}

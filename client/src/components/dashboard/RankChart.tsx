@@ -36,7 +36,7 @@ export function RankChart({ entries, currentUserId, isLoading }: RankChartProps)
   const chartData = entries.slice(0, 10).map(entry => {
     const isCurrentUser = entry.userId === currentUserId;
     return {
-      name: isCurrentUser ? entry.firstName : `سفير #${entry.rank}`,
+      name: isCurrentUser ? entry.firstName : `#${entry.rank}`,
       leads: entry.totalLeads,
       conversions: entry.totalConversions,
       isCurrentUser,
@@ -47,11 +47,11 @@ export function RankChart({ entries, currentUserId, isLoading }: RankChartProps)
   const percentile = Math.round(((totalParticipants - currentRank + 1) / totalParticipants) * 100);
   
   const achievements = [];
-  if (currentRank === 1) achievements.push({ icon: Crown, label: "المتصدر", color: "bg-accent text-accent-foreground" });
+  if (currentRank === 1) achievements.push({ icon: Crown, label: "Leader", color: "bg-accent text-accent-foreground" });
   if (currentRank <= 3) achievements.push({ icon: Award, label: "Top 3", color: "bg-primary text-primary-foreground" });
   if (currentUserEntry.totalLeads >= 10) achievements.push({ icon: Target, label: "10+ Leads", color: "bg-green-500 text-white" });
   if (currentUserEntry.totalLeads >= 25) achievements.push({ icon: Zap, label: "25+ Leads", color: "bg-orange-500 text-white" });
-  if (currentUserEntry.totalConversions >= 5) achievements.push({ icon: Users, label: "5+ تحويلات", color: "bg-blue-500 text-white" });
+  if (currentUserEntry.totalConversions >= 5) achievements.push({ icon: Users, label: "5+ Conversions", color: "bg-blue-500 text-white" });
 
   return (
     <Card className="p-5 sm:p-6">
@@ -61,15 +61,15 @@ export function RankChart({ entries, currentUserId, isLoading }: RankChartProps)
             <TrendingUp className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">تحليل الأداء</h3>
-            <p className="text-xs text-muted-foreground">مقارنة مع أفضل 10 سفراء</p>
+            <h3 className="font-semibold text-foreground">Performance Analysis</h3>
+            <p className="text-xs text-muted-foreground">Compared to top 10 ambassadors</p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
           <div className="text-center px-4 py-2 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
             <div className="text-2xl font-bold text-primary">Top {percentile}%</div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">النسبة المئوية</div>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Percentile</div>
           </div>
         </div>
       </div>
@@ -104,13 +104,13 @@ export function RankChart({ entries, currentUserId, isLoading }: RankChartProps)
                   return (
                     <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
                       <p className="font-semibold text-foreground mb-1">
-                        {data.isCurrentUser ? `${data.name} (أنت)` : `سفير #${data.rank}`}
+                        {data.isCurrentUser ? `${data.name} (You)` : `Ambassador #${data.rank}`}
                       </p>
-                      <p className="text-sm text-muted-foreground">المركز: #{data.rank}</p>
+                      <p className="text-sm text-muted-foreground">Rank: #{data.rank}</p>
                       {data.isCurrentUser && (
                         <>
                           <p className="text-sm text-muted-foreground">Leads: {data.leads}</p>
-                          <p className="text-sm text-muted-foreground">تحويلات: {data.conversions}</p>
+                          <p className="text-sm text-muted-foreground">Conversions: {data.conversions}</p>
                         </>
                       )}
                     </div>
@@ -140,11 +140,11 @@ export function RankChart({ entries, currentUserId, isLoading }: RankChartProps)
           </div>
           <div>
             <div className="text-2xl font-bold text-primary">{currentUserEntry.totalConversions}</div>
-            <div className="text-xs text-muted-foreground">تحويلات</div>
+            <div className="text-xs text-muted-foreground">Conversions</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-accent">#{currentRank}</div>
-            <div className="text-xs text-muted-foreground">المركز</div>
+            <div className="text-xs text-muted-foreground">Rank</div>
           </div>
         </div>
       </div>

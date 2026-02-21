@@ -66,9 +66,9 @@ type BulkSendFilterType = "all_new" | "all_failed" | "pending_retry" | "all_unse
 const whatsappTemplates = [
   {
     id: "openinggiveaway",
-    name: "رسالة الترحيب",
-    description: "رسالة ترحيب تلقائية للطلاب الجدد",
-    preview: "مرحباً [الاسم]! شكراً لتسجيلك في فرصة...",
+    name: "Welcome Message",
+    description: "Automatic welcome message for new students",
+    preview: "Hello [Name]! Thank you for registering with Foorsa...",
     icon: "welcome",
   },
 ];

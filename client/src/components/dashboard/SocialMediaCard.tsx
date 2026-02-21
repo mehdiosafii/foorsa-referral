@@ -28,7 +28,7 @@ export function SocialMediaCard({
   youtubeFollowers,
   tiktokFollowers,
 }: SocialMediaCardProps) {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
   
   const hasSocialMedia = instagramUrl || youtubeUrl || tiktokUrl;
   
