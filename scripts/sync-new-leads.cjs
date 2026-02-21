@@ -80,13 +80,15 @@ async function main() {
 
         // Record conversion if applicable
         if (CONVERSION_LIFECYCLES.includes(lifecycle)) {
-          const { rowCount } = await pool.query(
-            `INSERT INTO ref_conversions (id, user_id, lead_id, amount, notes, created_at)
-             SELECT gen_random_uuid()::varchar, $1, $2, 0, $3, NOW()
-             WHERE NOT EXISTS (SELECT 1 FROM ref_conversions WHERE lead_id = $2)`,
-            [lead.user_id, lead.id, 'Auto-converted: lifecycle = ' + lifecycle]
-          );
-          if (rowCount > 0) stats.conversions++;
+          const existing = await pool.query('SELECT 1 FROM ref_conversions WHERE lead_id = $1', [lead.id]);
+          if (existing.rows.length === 0) {
+            await pool.query(
+              `INSERT INTO ref_conversions (id, user_id, lead_id, amount, notes, created_at)
+               VALUES (gen_random_uuid()::varchar, $1, $2, 0, $3, NOW())`,
+              [lead.user_id, lead.id, 'Auto-converted: lifecycle = ' + lifecycle]
+            );
+            stats.conversions++;
+          }
         }
       }
 
