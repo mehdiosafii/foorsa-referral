@@ -6,7 +6,7 @@
 
 const { Pool } = require('pg');
 
-const DB_URL = process.env.DATABASE_URL || 'process.env.DATABASE_URL';
+const DB_URL = process.env.DATABASE_URL || process.env.DATABASE_URL;
 const RESPONDIO_TOKEN = process.env.RESPONDIO_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODQ1Mywic3BhY2VJZCI6MjE3MTY3LCJvcmdJZCI6MjE2MTI2LCJ0eXBlIjoiYXBpIiwiaWF0IjoxNzIyMjI3Njc3fQ.zSqvUI1BAOH5eqJDYaZpBDMbV3pCnlJX6Sfob823SoM';
 const RESPONDIO_BASE = 'https://api.respond.io/v2';
 const CONVERSION_LIFECYCLES = ['Our Student', 'Our Student (March)', 'New Old applicant'];
