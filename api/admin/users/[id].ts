@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from 'pg';
-import { requireAdmin } from '../../lib/admin-auth';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'FoorsaRef2026!';
 
 
 
@@ -19,7 +19,7 @@ function getPool(): Pool {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!requireAdmin(req, res)) return;
+  const pw = (req.headers['x-admin-password'] as string) || ''; if (pw !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   const { id } = req.query;
   const pool = getPool();
 
