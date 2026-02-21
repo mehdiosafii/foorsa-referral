@@ -30,8 +30,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    const { password: _, ...userWithoutPassword } = user;
-    return res.status(200).json(userWithoutPassword);
+    return res.status(200).json({
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      phone: user.phone,
+      profileImageUrl: user.profile_image_url,
+      referralCode: user.referral_code,
+      isAdmin: user.is_admin,
+      instagramUrl: user.instagram_url,
+      youtubeUrl: user.youtube_url,
+      tiktokUrl: user.tiktok_url,
+      instagramFollowers: user.instagram_followers,
+      youtubeFollowers: user.youtube_followers,
+      tiktokFollowers: user.tiktok_followers,
+      createdAt: user.created_at,
+    });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

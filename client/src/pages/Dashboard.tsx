@@ -57,13 +57,13 @@ export default function Dashboard() {
   }, [isAuthenticated, authLoading, toast, t]);
 
   const { data: stats, isLoading: statsLoading } = useQuery<UserStats>({
-    queryKey: ["/api/stats"],
-    enabled: isAuthenticated,
+    queryKey: [`/api/stats?userId=${user?.id}`],
+    enabled: isAuthenticated && !!user?.id,
   });
 
   const { data: leads, isLoading: leadsLoading } = useQuery<Lead[]>({
-    queryKey: ["/api/leads"],
-    enabled: isAuthenticated,
+    queryKey: [`/api/leads?userId=${user?.id}`],
+    enabled: isAuthenticated && !!user?.id,
   });
 
   const { data: leaderboard, isLoading: leaderboardLoading } = useQuery<LeaderboardEntry[]>({
@@ -72,13 +72,13 @@ export default function Dashboard() {
   });
 
   const { data: chartData } = useQuery<{ date: string; clicks: number; leads: number }[]>({
-    queryKey: ["/api/stats/chart"],
-    enabled: isAuthenticated,
+    queryKey: [`/api/stats/chart?userId=${user?.id}`],
+    enabled: isAuthenticated && !!user?.id,
   });
 
   const { data: mapClicks, isLoading: mapLoading } = useQuery<any[]>({
-    queryKey: ["/api/ambassador/map/clicks"],
-    enabled: isAuthenticated,
+    queryKey: [`/api/ambassador/map/clicks?userId=${user?.id}`],
+    enabled: isAuthenticated && !!user?.id,
   });
 
   const { data: offers, isLoading: offersLoading } = useQuery<Offer[]>({
