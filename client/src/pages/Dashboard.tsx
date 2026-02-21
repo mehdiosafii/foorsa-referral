@@ -15,9 +15,28 @@ import { SocialMediaCard } from "@/components/dashboard/SocialMediaCard";
 import { UniversityInfoCard } from "@/components/dashboard/UniversityInfoCard";
 import { MapView } from "@/components/MapView";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MousePointerClick, Users, TrendingUp, Target, Sparkles } from "lucide-react";
+import { MousePointerClick, Users, TrendingUp, Target, Sparkles, Package, Tag, ExternalLink } from "lucide-react";
 import type { UserStats, LeaderboardEntry, Lead } from "@shared/schema";
+
+interface Offer {
+  id: string;
+  title: string;
+  titleAr?: string;
+  titleFr?: string;
+  description?: string;
+  descriptionAr?: string;
+  descriptionFr?: string;
+  imageUrl?: string;
+  price?: string;
+  category?: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -60,6 +79,16 @@ export default function Dashboard() {
   const { data: mapClicks, isLoading: mapLoading } = useQuery<any[]>({
     queryKey: ["/api/ambassador/map/clicks"],
     enabled: isAuthenticated,
+  });
+
+  const { data: offers, isLoading: offersLoading } = useQuery<Offer[]>({
+    queryKey: ["/api/offers", user?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/offers?userId=${user?.id}`);
+      if (!res.ok) throw new Error("Failed to fetch offers");
+      return res.json();
+    },
+    enabled: isAuthenticated && !!user?.id,
   });
 
   if (authLoading) {
@@ -155,6 +184,75 @@ export default function Dashboard() {
         </div>
 
         <ReferralLinkCard referralCode={user?.referralCode || ""} />
+
+        {/* Offers Section */}
+        {offersLoading ? (
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-48 rounded-lg" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : offers && offers.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Package className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Available Offers</CardTitle>
+                  <CardDescription>
+                    Programs and services you can promote to earn commissions
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {offers.map((offer) => (
+                  <Card key={offer.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    {offer.imageUrl && (
+                      <div className="h-32 bg-muted relative overflow-hidden">
+                        <img
+                          src={offer.imageUrl}
+                          alt={offer.title}
+                          className="w-full h-full object-cover transition-transform hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <CardContent className="p-4 space-y-2">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-base line-clamp-1">{offer.title}</h3>
+                        {offer.category && (
+                          <Badge variant="secondary" className="text-xs">
+                            <Tag className="h-3 w-3 mr-1" />
+                            {offer.category}
+                          </Badge>
+                        )}
+                      </div>
+                      {offer.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {offer.description}
+                        </p>
+                      )}
+                      {offer.price && (
+                        <p className="text-lg font-bold text-primary">{offer.price}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <SocialMediaCard
           instagramUrl={user?.instagramUrl}

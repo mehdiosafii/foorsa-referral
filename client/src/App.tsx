@@ -25,6 +25,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import AdminOverview from "@/pages/admin/AdminOverview";
 import AdminAmbassadors from "@/pages/admin/AdminAmbassadors";
 import AdminLeads from "@/pages/admin/AdminLeads";
+import AdminOffers from "@/pages/admin/AdminOffers";
 import AdminTracking from "@/pages/admin/AdminTracking";
 import AdminSettings from "@/pages/admin/AdminSettings";
 
@@ -106,6 +107,11 @@ function Router() {
       <Route path="/admin/leads">
         <AdminLayout>
           <AdminLeads />
+        </AdminLayout>
+      </Route>
+      <Route path="/admin/offers">
+        <AdminLayout>
+          <AdminOffers />
         </AdminLayout>
       </Route>
       <Route path="/admin/tracking">

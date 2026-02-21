@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { 
-  Home, Users, Target, Link as LinkIcon, Settings, Lock, Activity, Search, Bell 
+  Home, Users, Target, Link as LinkIcon, Settings, Lock, Activity, Search, Bell, Package 
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +36,7 @@ const navItems = [
   { title: "Overview", href: "/admin", icon: Home },
   { title: "Ambassadors", href: "/admin/ambassadors", icon: Users },
   { title: "Leads", href: "/admin/leads", icon: Target },
+  { title: "Offers", href: "/admin/offers", icon: Package },
   { title: "Tracking Links", href: "/admin/tracking", icon: LinkIcon },
   { title: "Settings", href: "/admin/settings", icon: Settings },
 ];
