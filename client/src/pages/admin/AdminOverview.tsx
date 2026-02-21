@@ -74,9 +74,9 @@ export default function AdminOverview() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
+      <div className="space-y-1">
         <h1 className="text-2xl font-semibold" data-testid="heading-overview">Overview</h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground text-sm">
           Key metrics and recent activity
         </p>
       </div>
@@ -121,25 +121,36 @@ export default function AdminOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold">Recent Submissions</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-semibold">Recent Submissions</CardTitle>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {leadsLoading ? (
               <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
+                  <Skeleton key={i} className="h-16 w-full rounded-lg" />
                 ))}
               </div>
             ) : recentLeads.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-4 text-center">
-                No leads yet
-              </p>
+              <div className="py-12 text-center text-muted-foreground">
+                <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-3">
+                  <Target className="h-8 w-8 opacity-40" />
+                </div>
+                <p className="text-sm font-medium">No leads yet</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Leads will appear here when submitted</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {recentLeads.map((lead) => (
                   <div
                     key={lead.id}
-                    className="flex items-center justify-between gap-4 py-2 border-b border-border/50 last:border-0"
+                    className="flex items-center justify-between gap-4 py-3 border-b border-border/50 last:border-0"
                     data-testid={`lead-item-${lead.id}`}
                   >
                     <div className="min-w-0 flex-1">
@@ -163,25 +174,36 @@ export default function AdminOverview() {
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold">Top Performers</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-muted">
+                <Trophy className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-semibold">Top Performers</CardTitle>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {usersLoading ? (
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className="h-14 w-full" />
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
                 ))}
               </div>
             ) : topPerformers.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-4 text-center">
-                No ambassadors yet
-              </p>
+              <div className="py-12 text-center text-muted-foreground">
+                <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-3">
+                  <Users className="h-8 w-8 opacity-40" />
+                </div>
+                <p className="text-sm font-medium">No ambassadors yet</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Ambassador performance will appear here</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {topPerformers.map((user, index) => (
                   <div
                     key={user.id}
-                    className="flex items-center gap-4 p-3 rounded-lg bg-muted/30"
+                    className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                     data-testid={`performer-item-${user.id}`}
                   >
                     <div className="shrink-0">

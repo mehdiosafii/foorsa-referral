@@ -376,7 +376,7 @@ export default function AdminLeads() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-semibold tracking-tight" data-testid="heading-leads">Leads</h1>
+                <h1 className="text-2xl font-semibold" data-testid="heading-leads">Leads</h1>
                 {isPolling && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-medium" data-testid="badge-live-polling">
                     <span className="relative flex h-1.5 w-1.5">

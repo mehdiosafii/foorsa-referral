@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -211,11 +211,11 @@ export default function AdminTracking() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+        <div className="space-y-1">
           <h1 className="text-2xl font-semibold" data-testid="heading-tracking">
             Tracking Links
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground text-sm">
             Create and manage tracking links for campaigns.
           </p>
         </div>
@@ -230,119 +230,128 @@ export default function AdminTracking() {
       </div>
 
       {isLoading ? (
-        <Card className="p-6">
-          <div className="space-y-4">
+        <Card>
+          <div className="p-6 space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-center gap-4">
-                <Skeleton className="h-10 w-40" />
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-16" />
-                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-12 w-full rounded-lg" />
               </div>
             ))}
           </div>
         </Card>
       ) : !trackingLinks || trackingLinks.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Link className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-2">No tracking links yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Create your first tracking link to start tracking campaign performance.
-          </p>
-          <Button onClick={() => openDialog()} data-testid="button-create-first-link">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Link
-          </Button>
+        <Card>
+          <CardContent className="py-16 text-center">
+            <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+              <Link className="h-10 w-10 text-muted-foreground opacity-40" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No tracking links yet</h3>
+            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+              Create your first tracking link to start tracking campaign performance across platforms.
+            </p>
+            <Button onClick={() => openDialog()} data-testid="button-create-first-link" className="gap-2">
+              <Plus className="h-4 w-4" />
+              Create Link
+            </Button>
+          </CardContent>
         </Card>
       ) : (
         <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Platform</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead className="text-center">Clicks</TableHead>
-                <TableHead className="text-center">Leads</TableHead>
-                <TableHead className="text-center">Active</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {trackingLinks.map((link) => (
-                <TableRow key={link.id} data-testid={`row-tracking-link-${link.id}`}>
-                  <TableCell className="font-medium" data-testid={`text-link-name-${link.id}`}>
-                    {link.name}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={getPlatformColor(link.platform)}
-                      data-testid={`badge-platform-${link.id}`}
-                    >
-                      {link.platform}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <code
-                      className="text-sm bg-muted px-2 py-1 rounded"
-                      data-testid={`text-code-${link.id}`}
-                    >
-                      {link.code}
-                    </code>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                      <span data-testid={`text-clicks-${link.id}`}>{link.totalClicks}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span data-testid={`text-leads-${link.id}`}>{link.totalLeads}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Switch
-                      checked={link.isActive ?? false}
-                      onCheckedChange={() => toggleStatus(link)}
-                      data-testid={`switch-active-${link.id}`}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => openDialog(link)}
-                        data-testid={`button-edit-${link.id}`}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => copyUrl(link.code)}
-                        data-testid={`button-copy-${link.id}`}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => setDeleteId(link.id)}
-                        data-testid={`button-delete-${link.id}`}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-b border-border/50">
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Name</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Platform</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Code</TableHead>
+                  <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Clicks</TableHead>
+                  <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Leads</TableHead>
+                  <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Active</TableHead>
+                  <TableHead className="text-right text-xs uppercase tracking-wide text-muted-foreground font-medium h-11">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {trackingLinks.map((link) => (
+                  <TableRow 
+                    key={link.id} 
+                    data-testid={`row-tracking-link-${link.id}`}
+                    className="border-b border-border/30 hover:bg-muted/50 transition-colors"
+                  >
+                    <TableCell className="font-medium py-4" data-testid={`text-link-name-${link.id}`}>
+                      {link.name}
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <Badge
+                        variant="secondary"
+                        className={getPlatformColor(link.platform)}
+                        data-testid={`badge-platform-${link.id}`}
+                      >
+                        {link.platform}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <code
+                        className="text-sm bg-muted px-2.5 py-1.5 rounded font-mono"
+                        data-testid={`text-code-${link.id}`}
+                      >
+                        {link.code}
+                      </code>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <MousePointerClick className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium tabular-nums" data-testid={`text-clicks-${link.id}`}>{link.totalClicks}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium tabular-nums" data-testid={`text-leads-${link.id}`}>{link.totalLeads}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center py-4">
+                      <Switch
+                        checked={link.isActive ?? false}
+                        onCheckedChange={() => toggleStatus(link)}
+                        data-testid={`switch-active-${link.id}`}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right py-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openDialog(link)}
+                          data-testid={`button-edit-${link.id}`}
+                          className="h-8 w-8"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => copyUrl(link.code)}
+                          data-testid={`button-copy-${link.id}`}
+                          className="h-8 w-8"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setDeleteId(link.id)}
+                          data-testid={`button-delete-${link.id}`}
+                          className="h-8 w-8"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </Card>
       )}
 

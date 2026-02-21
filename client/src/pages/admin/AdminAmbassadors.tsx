@@ -293,16 +293,30 @@ export default function AdminAmbassadors() {
 
   return (
     <div className="p-6 space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold" data-testid="heading-ambassadors">
+          Ambassadors
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage ambassador accounts and their performance.
+        </p>
+      </div>
+
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-xl" data-testid="heading-ambassadors">
-                Ambassadors
-              </CardTitle>
-              <CardDescription className="mt-1">
-                Manage ambassador accounts and their performance.
-              </CardDescription>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-semibold">
+                  Ambassador Directory
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  View and manage all ambassador accounts
+                </CardDescription>
+              </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               <Button
@@ -340,25 +354,17 @@ export default function AdminAmbassadors() {
             <div className="p-6">
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-[200px]" />
-                      <Skeleton className="h-3 w-[150px]" />
-                    </div>
-                    <Skeleton className="h-4 w-[80px]" />
-                    <Skeleton className="h-4 w-[60px]" />
-                  </div>
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
                 ))}
               </div>
             </div>
           ) : filteredUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 space-y-3">
-              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                <Users className="h-6 w-6 text-muted-foreground" />
+              <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-1">
+                <Users className="h-8 w-8 text-muted-foreground opacity-40" />
               </div>
               <div className="text-center space-y-1">
-                <p className="font-medium text-foreground">No ambassadors found</p>
+                <p className="font-semibold text-foreground">No ambassadors found</p>
                 <p className="text-sm text-muted-foreground">
                   {searchQuery ? "Try adjusting your search query" : "Add your first ambassador to get started"}
                 </p>
