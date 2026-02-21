@@ -78,6 +78,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { userId } = req.query;
 
   try {
+    // Auto-archive offers whose deadline has passed
+    await pool.query(
+      `UPDATE ref_offers 
+       SET is_active = false, updated_at = NOW() 
+       WHERE is_active = true 
+         AND deleted_at IS NULL 
+         AND deadline IS NOT NULL 
+         AND deadline != ''
+         AND deadline::date < CURRENT_DATE`
+    );
+
     if (userId) {
       // Get offers assigned to this specific ambassador
       const result = await pool.query(

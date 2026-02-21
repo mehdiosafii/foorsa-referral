@@ -59,6 +59,9 @@ function transformOffer(row: any) {
     imageUrl: row.image_url,
     price: row.price,
     category: row.category,
+    location: row.location,
+    deadline: row.deadline,
+    stories: row.stories,
     isActive: row.is_active,
     sortOrder: row.sort_order,
     createdAt: row.created_at,
@@ -73,6 +76,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const pool = getPool();
   await ensureTables(pool);
+
+  // Auto-archive offers whose deadline has passed
+  try {
+    await pool.query(
+      `UPDATE ref_offers 
+       SET is_active = false, updated_at = NOW() 
+       WHERE is_active = true 
+         AND deleted_at IS NULL 
+         AND deadline IS NOT NULL 
+         AND deadline != ''
+         AND deadline::date < CURRENT_DATE`
+    );
+  } catch (_) { /* deadline column may not exist yet */ }
 
   if (req.method === 'GET') {
     try {
