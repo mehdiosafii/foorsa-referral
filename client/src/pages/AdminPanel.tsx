@@ -40,7 +40,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { FuturisticStatsBlock, FuturisticGrid } from "@/components/admin/FuturisticStatsBlock";
 import type { User, Lead, TrackingLinkStats, PerformanceEntity, PerformanceTimeseries } from "@shared/schema";
 
-const ADMIN_PASSWORD = "1234";
+// Admin password is validated server-side via /api/auth/admin
 
 interface AdminStats {
   totalUsers: number;
@@ -143,14 +143,25 @@ export default function AdminPanel() {
     },
   });
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("adminAuthenticated", "true");
-      setPasswordError("");
-    } else {
-      setPasswordError("Incorrect password");
+    try {
+      const res = await fetch("/api/auth/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem("adminAuthenticated", "true");
+        sessionStorage.setItem("adminPassword", password);
+        setPasswordError("");
+      } else {
+        setPasswordError("Incorrect password");
+        setPassword("");
+      }
+    } catch {
+      setPasswordError("Login failed");
       setPassword("");
     }
   };
@@ -219,7 +230,7 @@ export default function AdminPanel() {
       params.set("startDate", analyticsStartDate.toISOString());
       params.set("endDate", new Date().toISOString());
       const res = await fetch(`/api/admin/analytics/summary?${params}`, {
-        headers: { "x-admin-password": ADMIN_PASSWORD },
+        headers: { "X-Admin-Password": sessionStorage.getItem("adminPassword") || "" },
       });
       if (!res.ok) throw new Error("Failed to fetch analytics summary");
       return res.json();
@@ -236,7 +247,7 @@ export default function AdminPanel() {
       params.set("startDate", analyticsStartDate.toISOString());
       params.set("endDate", new Date().toISOString());
       const res = await fetch(`/api/admin/analytics/timeseries?${params}`, {
-        headers: { "x-admin-password": ADMIN_PASSWORD },
+        headers: { "X-Admin-Password": sessionStorage.getItem("adminPassword") || "" },
       });
       if (!res.ok) throw new Error("Failed to fetch analytics timeseries");
       return res.json();
