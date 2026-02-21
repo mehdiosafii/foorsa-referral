@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { 
-  Home, Users, Target, Link as LinkIcon, Settings, Lock, Activity, Search, Bell, Package 
+  Home, Users, Target, Link as LinkIcon, Settings, Lock, Activity, Search, Bell, Package, LogOut 
 } from "lucide-react";
 import {
   Sidebar,
@@ -243,6 +243,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <Settings className="mr-2 h-4 w-4" />
                         Settings
                       </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                      onClick={() => {
+                        sessionStorage.removeItem("adminAuthenticated");
+                        sessionStorage.removeItem("adminPassword");
+                        window.location.href = "/";
+                      }}
+                      data-testid="button-logout"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
