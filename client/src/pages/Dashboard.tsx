@@ -257,11 +257,13 @@ export default function Dashboard() {
           <PerformanceChart data={chartData} />
         )}
 
-        <RankChart 
-          entries={leaderboard || []} 
-          currentUserId={user?.id}
-          isLoading={leaderboardLoading}
-        />
+        {leaderboard && leaderboard.length > 0 && (
+          <RankChart 
+            entries={leaderboard} 
+            currentUserId={user?.id}
+            isLoading={leaderboardLoading}
+          />
+        )}
 
         {stats && (
           <AchievementsBadges 
@@ -271,11 +273,13 @@ export default function Dashboard() {
           />
         )}
 
-        <MapView 
-          clicks={mapClicks || []} 
-          title="Your Visitor Locations" 
-          isLoading={mapLoading} 
-        />
+        {mapClicks && mapClicks.length > 0 && (
+          <MapView 
+            clicks={mapClicks} 
+            title="Your Visitor Locations" 
+            isLoading={mapLoading} 
+          />
+        )}
 
         <div className="grid gap-6 lg:grid-cols-2">
           <LeadsTable leads={leads || []} isLoading={leadsLoading} />
