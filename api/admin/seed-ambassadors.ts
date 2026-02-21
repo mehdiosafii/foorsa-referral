@@ -24,10 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   for (const a of ambassadors) {
     const hash = crypto.createHash('sha256').update(a.pw).digest('hex');
     const result = await db.query(
-      `INSERT INTO ref_users (first_name, last_name, email, referral_code, password_hash, role, full_name)
-       VALUES ($1, $2, $3, $4, $5, 'ambassador', $6)
+      `INSERT INTO ref_users (first_name, last_name, email, referral_code, password)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (email) DO NOTHING`,
-      [a.first, a.last, a.email, a.code, hash, `${a.first} ${a.last}`]
+      [a.first, a.last, a.email, a.code, hash]
     );
     if (result.rowCount && result.rowCount > 0) created++;
   }
