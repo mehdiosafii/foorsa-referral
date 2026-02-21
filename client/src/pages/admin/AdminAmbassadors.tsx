@@ -170,20 +170,21 @@ export default function AdminAmbassadors() {
     },
   });
 
-  const impersonateMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      return await apiRequest("POST", `/api/admin/users/${userId}/impersonate`, {});
-    },
-    onSuccess: () => {
-      toast({ title: "Logging in as ambassador...", description: "Redirecting to dashboard" });
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 500);
-    },
-    onError: (error: any) => {
-      toast({ title: error.message || "Failed to impersonate ambassador", variant: "destructive" });
-    },
-  });
+  const handleViewDashboard = (user: AdminUser) => {
+    // Store ambassador data in localStorage so Dashboard reads it via useAuth
+    const ambassadorData = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      referralCode: user.referralCode,
+      role: user.role,
+    };
+    localStorage.setItem("ambassador_user", JSON.stringify(ambassadorData));
+    toast({ title: "Viewing ambassador dashboard...", description: `${user.firstName} ${user.lastName}` });
+    // Open in new tab so admin panel stays open
+    window.open("/dashboard", "_blank");
+  };
 
   const updateAmbassadorMutation = useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: EditAmbassadorForm }) => {
@@ -472,11 +473,11 @@ export default function AdminAmbassadors() {
                               View Portal
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => impersonateMutation.mutate(user.id)}
+                              onClick={() => handleViewDashboard(user)}
                               data-testid={`action-login-as-${user.id}`}
                             >
                               <LogIn className="h-4 w-4 mr-2" />
-                              Login as Ambassador
+                              View Dashboard
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
