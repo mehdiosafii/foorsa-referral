@@ -40,7 +40,7 @@ async function ensureTables(pool: Pool) {
     CREATE TABLE IF NOT EXISTS ref_offer_assignments (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       offer_id UUID REFERENCES ref_offers(id) ON DELETE CASCADE,
-      user_id UUID REFERENCES ref_users(id) ON DELETE CASCADE,
+      user_id VARCHAR NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(offer_id, user_id)
     );
