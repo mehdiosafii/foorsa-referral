@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { userId } = req.query;
 
   try {
-    // Auto-archive offers whose deadline has passed
+    // Auto-archive offers whose deadline has passed (only if deadline is a valid date)
     await pool.query(
       `UPDATE ref_offers 
        SET is_active = false, updated_at = NOW() 
@@ -86,6 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
          AND deleted_at IS NULL 
          AND deadline IS NOT NULL 
          AND deadline != ''
+         AND deadline ~ '^\d{4}-\d{2}-\d{2}'
          AND deadline::date < CURRENT_DATE`
     );
 

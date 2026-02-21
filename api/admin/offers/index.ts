@@ -86,6 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
          AND deleted_at IS NULL 
          AND deadline IS NOT NULL 
          AND deadline != ''
+         AND deadline ~ '^\d{4}-\d{2}-\d{2}'
          AND deadline::date < CURRENT_DATE`
     );
   } catch (_) { /* deadline column may not exist yet */ }
