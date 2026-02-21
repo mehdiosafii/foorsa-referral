@@ -2,8 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from 'pg';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'FoorsaRef2026!';
 
-
-
 let pool: Pool | null = null;
 function getPool(): Pool {
   if (!pool) {
@@ -18,24 +16,36 @@ function getPool(): Pool {
   return pool;
 }
 
+function getDateFilter(period: string, alias: string): string {
+  switch (period) {
+    case 'month': return `AND ${alias}.created_at >= date_trunc('month', NOW())`;
+    case 'lastMonth': return `AND ${alias}.created_at >= date_trunc('month', NOW() - INTERVAL '1 month') AND ${alias}.created_at < date_trunc('month', NOW())`;
+    case 'week': return `AND ${alias}.created_at >= date_trunc('week', NOW())`;
+    case '7d': return `AND ${alias}.created_at >= NOW() - INTERVAL '7 days'`;
+    case '30d': return `AND ${alias}.created_at >= NOW() - INTERVAL '30 days'`;
+    default: return '';
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const pw = (req.headers['x-admin-password'] as string) || ''; if (pw !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   const pool = getPool();
 
   if (req.method === 'GET') {
     try {
+      const period = (req.query.period as string) || 'all';
+      const cdf = getDateFilter(period, 'c');
+      const ldf = getDateFilter(period, 'l');
+      const convdf = getDateFilter(period, 'conv');
+
       const result = await pool.query(`
         SELECT 
           u.*,
-          COUNT(DISTINCT c.id)::int as total_clicks,
-          COUNT(DISTINCT l.id)::int as total_leads,
-          COUNT(DISTINCT conv.id)::int as total_conversions
+          (SELECT COUNT(*)::int FROM ref_clicks c WHERE c.user_id = u.id ${cdf}) as total_clicks,
+          (SELECT COUNT(*)::int FROM ref_leads l WHERE l.user_id = u.id AND l.deleted_at IS NULL ${ldf}) as total_leads,
+          (SELECT COUNT(*)::int FROM ref_conversions conv WHERE conv.user_id = u.id ${convdf}) as total_conversions
         FROM ref_users u
-        LEFT JOIN ref_clicks c ON u.id = c.user_id
-        LEFT JOIN ref_leads l ON u.id = l.user_id AND l.deleted_at IS NULL
-        LEFT JOIN ref_conversions conv ON u.id = conv.user_id
         WHERE u.deleted_at IS NULL
-        GROUP BY u.id
         ORDER BY u.created_at DESC
       `);
       const users = result.rows.map((r: any) => ({
@@ -72,7 +82,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
       const referralCode = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Date.now().toString(36)}`;
-      // Simple hash for now - bcrypt causes issues in serverless
       const result = await pool.query(
         `INSERT INTO ref_users (first_name, last_name, email, phone, password, referral_code, instagram_url, youtube_url, tiktok_url, instagram_followers, youtube_followers, tiktok_followers)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,

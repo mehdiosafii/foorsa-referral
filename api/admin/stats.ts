@@ -2,8 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from 'pg';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'FoorsaRef2026!';
 
-
-
 let pool: Pool | null = null;
 function getPool(): Pool {
   if (!pool) {
@@ -18,6 +16,17 @@ function getPool(): Pool {
   return pool;
 }
 
+function getDateFilter(period: string): string {
+  switch (period) {
+    case 'month': return `created_at >= date_trunc('month', NOW())`;
+    case 'lastMonth': return `created_at >= date_trunc('month', NOW() - INTERVAL '1 month') AND created_at < date_trunc('month', NOW())`;
+    case 'week': return `created_at >= date_trunc('week', NOW())`;
+    case '7d': return `created_at >= NOW() - INTERVAL '7 days'`;
+    case '30d': return `created_at >= NOW() - INTERVAL '30 days'`;
+    default: return '1=1';
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const pw = (req.headers['x-admin-password'] as string) || ''; if (pw !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   if (req.method !== 'GET') {
@@ -26,15 +35,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const pool = getPool();
+    const period = (req.query.period as string) || 'all';
+    const df = getDateFilter(period);
+
     const result = await pool.query(`
       SELECT 
         (SELECT COUNT(*) FROM ref_users WHERE deleted_at IS NULL) as total_ambassadors,
-        (SELECT COUNT(*) FROM ref_clicks) as total_clicks,
-        (SELECT COUNT(*) FROM ref_leads WHERE deleted_at IS NULL) as total_leads,
-        (SELECT COUNT(*) FROM ref_conversions) as total_conversions,
+        (SELECT COUNT(*) FROM ref_clicks WHERE ${df}) as total_clicks,
+        (SELECT COUNT(*) FROM ref_leads WHERE deleted_at IS NULL AND ${df}) as total_leads,
+        (SELECT COUNT(*) FROM ref_conversions WHERE ${df}) as total_conversions,
         (SELECT COUNT(*) FROM ref_tracking_links) as total_tracking_links,
-        (SELECT COUNT(*) FROM ref_tracking_clicks) as total_tracking_clicks,
-        (SELECT COUNT(*) FROM ref_tracking_leads) as total_tracking_leads
+        (SELECT COUNT(*) FROM ref_tracking_clicks WHERE ${df}) as total_tracking_clicks,
+        (SELECT COUNT(*) FROM ref_tracking_leads WHERE ${df}) as total_tracking_leads
     `);
 
     const stats = result.rows[0];

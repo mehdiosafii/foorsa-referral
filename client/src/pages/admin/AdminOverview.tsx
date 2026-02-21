@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Users, MousePointerClick, Target, TrendingUp, Trophy, Medal, Award } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { User, Lead } from "@shared/schema";
@@ -26,17 +28,52 @@ interface LeadWithUser extends Lead {
   userName: string;
 }
 
+const periodOptions = [
+  { value: "all", label: "All Time" },
+  { value: "month", label: "This Month" },
+  { value: "lastMonth", label: "Last Month" },
+  { value: "week", label: "This Week" },
+  { value: "7d", label: "Last 7 Days" },
+  { value: "30d", label: "Last 30 Days" },
+];
+
 export default function AdminOverview() {
+  const [period, setPeriod] = useState("all");
+
   const { data: adminStats, isLoading: statsLoading } = useQuery<AdminStats>({
-    queryKey: ["/api/admin/stats"],
+    queryKey: ["/api/admin/stats", period],
+    queryFn: async () => {
+      const pw = sessionStorage.getItem("adminPassword") || "";
+      const res = await fetch(`/api/admin/stats?period=${period}`, {
+        headers: { "x-admin-password": pw },
+      });
+      if (!res.ok) throw new Error("Failed to fetch stats");
+      return res.json();
+    },
   });
 
   const { data: leads, isLoading: leadsLoading } = useQuery<LeadWithUser[]>({
-    queryKey: ["/api/admin/leads"],
+    queryKey: ["/api/admin/leads", period],
+    queryFn: async () => {
+      const pw = sessionStorage.getItem("adminPassword") || "";
+      const res = await fetch(`/api/admin/leads?period=${period}`, {
+        headers: { "x-admin-password": pw },
+      });
+      if (!res.ok) throw new Error("Failed to fetch leads");
+      return res.json();
+    },
   });
 
   const { data: users, isLoading: usersLoading } = useQuery<AdminUser[]>({
-    queryKey: ["/api/admin/users"],
+    queryKey: ["/api/admin/users", period],
+    queryFn: async () => {
+      const pw = sessionStorage.getItem("adminPassword") || "";
+      const res = await fetch(`/api/admin/users?period=${period}`, {
+        headers: { "x-admin-password": pw },
+      });
+      if (!res.ok) throw new Error("Failed to fetch users");
+      return res.json();
+    },
   });
 
   const recentLeads = leads?.slice(0, 5) || [];
@@ -45,8 +82,8 @@ export default function AdminOverview() {
     ?.sort((a, b) => (b.stats?.leads || 0) - (a.stats?.leads || 0))
     ?.slice(0, 3) || [];
 
-  const conversionRate = adminStats?.totalClicks && adminStats.totalClicks > 0
-    ? ((adminStats.totalLeads / adminStats.totalClicks) * 100).toFixed(1)
+  const conversionRate = adminStats?.totalLeads && adminStats.totalLeads > 0
+    ? ((adminStats.totalConversions / adminStats.totalLeads) * 100).toFixed(1)
     : "0";
 
   const getStatusBadge = (status: string) => {
@@ -74,11 +111,23 @@ export default function AdminOverview() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold" data-testid="heading-overview">Overview</h1>
-        <p className="text-muted-foreground text-sm">
-          Key metrics and recent activity
-        </p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold" data-testid="heading-overview">Overview</h1>
+          <p className="text-muted-foreground text-sm">
+            Key metrics and recent activity
+          </p>
+        </div>
+        <Select value={period} onValueChange={setPeriod}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {periodOptions.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

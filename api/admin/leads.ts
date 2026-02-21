@@ -2,8 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from 'pg';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'FoorsaRef2026!';
 
-
-
 let pool: Pool | null = null;
 function getPool(): Pool {
   if (!pool) {
@@ -18,6 +16,17 @@ function getPool(): Pool {
   return pool;
 }
 
+function getDateFilter(period: string, alias: string): string {
+  switch (period) {
+    case 'month': return `AND ${alias}.created_at >= date_trunc('month', NOW())`;
+    case 'lastMonth': return `AND ${alias}.created_at >= date_trunc('month', NOW() - INTERVAL '1 month') AND ${alias}.created_at < date_trunc('month', NOW())`;
+    case 'week': return `AND ${alias}.created_at >= date_trunc('week', NOW())`;
+    case '7d': return `AND ${alias}.created_at >= NOW() - INTERVAL '7 days'`;
+    case '30d': return `AND ${alias}.created_at >= NOW() - INTERVAL '30 days'`;
+    default: return '';
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const pw = (req.headers['x-admin-password'] as string) || ''; if (pw !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   if (req.method !== 'GET') {
@@ -26,6 +35,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const pool = getPool();
+    const period = (req.query.period as string) || 'all';
+    const df = getDateFilter(period, 'l');
+
     const result = await pool.query(`
       SELECT 
         l.*,
@@ -35,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         u.referral_code
       FROM ref_leads l
       LEFT JOIN ref_users u ON l.user_id = u.id
-      WHERE l.deleted_at IS NULL
+      WHERE l.deleted_at IS NULL ${df}
       ORDER BY l.created_at DESC
     `);
 
