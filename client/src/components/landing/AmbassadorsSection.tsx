@@ -21,9 +21,21 @@ interface PublicAmbassador {
 }
 
 const sectionText = {
-  title: "Our Ambassadors",
-  subtitle: "Meet the content creators helping students discover opportunities in China",
-  followersLabel: "followers"
+  en: {
+    title: "Our Ambassadors",
+    subtitle: "Meet the content creators helping students discover opportunities in China",
+    followersLabel: "followers"
+  },
+  ar: {
+    title: "سفراؤنا",
+    subtitle: "تعرفوا على صناع المحتوى الذين يساعدون الطلاب لاكتشاف الفرص في الصين",
+    followersLabel: "متابع"
+  },
+  fr: {
+    title: "Nos Ambassadeurs",
+    subtitle: "Rencontrez les créateurs de contenu qui aident les étudiants à découvrir les opportunités en Chine",
+    followersLabel: "abonnés"
+  }
 };
 
 function formatFollowers(count: number | null): string {
@@ -38,8 +50,8 @@ function getTotalFollowers(ambassador: PublicAmbassador): number {
 }
 
 export function AmbassadorsSection() {
-  const { t } = useLanguage();
-  const text = sectionText;
+  const { language, dir } = useLanguage();
+  const text = sectionText[language] || sectionText.ar;
   
   const { data: ambassadors = [], isLoading } = useQuery<PublicAmbassador[]>({
     queryKey: ["/api/ambassadors/public"],
@@ -91,7 +103,7 @@ export function AmbassadorsSection() {
                 {formatFollowers(getTotalFollowers(ambassador))} {text.followersLabel}
               </p>
               
-              <div className={`flex justify-center gap-2 `}>
+              <div className={`flex justify-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
                 {ambassador.instagramUrl && (
                   <Button
                     variant="ghost"
@@ -153,7 +165,7 @@ export function AmbassadorsSection() {
                   className="text-green-500 hover:text-green-600 hover:bg-green-500/10"
                 >
                   <a 
-                    href={`https://wa.me/212704309787?text=${encodeURIComponent(`Hello, I'm interested in studying in China. I came from ${ambassador.firstName} ${ambassador.lastName}`)}`}
+                    href={`https://wa.me/212704309787?text=${encodeURIComponent(`مرحبا، أنا مهتم بالدراسة في الصين. وصلت من عند ${ambassador.firstName} ${ambassador.lastName}`)}`}
                     target="_blank" 
                     rel="noopener noreferrer"
                     data-testid={`link-whatsapp-${ambassador.id}`}

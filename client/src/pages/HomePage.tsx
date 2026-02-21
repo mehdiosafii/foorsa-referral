@@ -5,10 +5,10 @@ import { useLanguage } from "@/context/LanguageContext";
 import foorsaLogo from "@assets/logo_official.png";
 
 export default function HomePage() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" dir="ltr">
+    <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-16">
