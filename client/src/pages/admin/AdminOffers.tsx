@@ -55,14 +55,12 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 interface Offer {
   id: string;
   title: string;
-  titleAr?: string;
-  titleFr?: string;
   description?: string;
-  descriptionAr?: string;
-  descriptionFr?: string;
   imageUrl?: string;
   price?: string;
   category?: string;
+  location?: string;
+  deadline?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
@@ -88,14 +86,12 @@ interface Assignment {
 
 const offerSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  titleAr: z.string().optional(),
-  titleFr: z.string().optional(),
   description: z.string().optional(),
-  descriptionAr: z.string().optional(),
-  descriptionFr: z.string().optional(),
   imageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   price: z.string().optional(),
   category: z.string().optional(),
+  location: z.string().optional(),
+  deadline: z.string().optional(),
   isActive: z.boolean().default(true),
   sortOrder: z.number().default(0),
 });
@@ -114,14 +110,12 @@ export default function AdminOffers() {
     resolver: zodResolver(offerSchema),
     defaultValues: {
       title: "",
-      titleAr: "",
-      titleFr: "",
       description: "",
-      descriptionAr: "",
-      descriptionFr: "",
       imageUrl: "",
       price: "",
       category: "",
+      location: "",
+      deadline: "",
       isActive: true,
       sortOrder: 0,
     },
@@ -230,14 +224,12 @@ export default function AdminOffers() {
       setEditingOffer(offer);
       form.reset({
         title: offer.title,
-        titleAr: offer.titleAr || "",
-        titleFr: offer.titleFr || "",
         description: offer.description || "",
-        descriptionAr: offer.descriptionAr || "",
-        descriptionFr: offer.descriptionFr || "",
         imageUrl: offer.imageUrl || "",
         price: offer.price || "",
         category: offer.category || "",
+        location: offer.location || "",
+        deadline: offer.deadline || "",
         isActive: offer.isActive,
         sortOrder: offer.sortOrder,
       });
@@ -434,52 +426,23 @@ export default function AdminOffers() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title (English) *</FormLabel>
+                    <FormLabel>Title *</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., Study in China Scholarship" />
+                      <Input {...field} placeholder="e.g., SDNU, UPC" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="titleAr"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title (Arabic)</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Arabic Title" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="titleFr"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title (French)</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Titre en français" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description (English)</FormLabel>
+                    <FormLabel>Full Name / Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Detailed description..." rows={3} />
+                      <Textarea {...field} placeholder="e.g., Shandong Normal University" rows={2} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -489,12 +452,12 @@ export default function AdminOffers() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="descriptionAr"
+                  name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description (Arabic)</FormLabel>
+                      <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <Textarea {...field} placeholder="Arabic Description" rows={2} />
+                        <Input {...field} placeholder="e.g., Jinan, Shandong" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -502,12 +465,12 @@ export default function AdminOffers() {
                 />
                 <FormField
                   control={form.control}
-                  name="descriptionFr"
+                  name="deadline"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description (French)</FormLabel>
+                      <FormLabel>Deadline</FormLabel>
                       <FormControl>
-                        <Textarea {...field} placeholder="Description en français" rows={2} />
+                        <Input {...field} placeholder="e.g., 30th December" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
