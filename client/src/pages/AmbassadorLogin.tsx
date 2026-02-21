@@ -13,7 +13,7 @@ import foorsaLogo from "@assets/logo_official.png";
 
 export default function AmbassadorLogin() {
   const [, setLocation] = useLocation();
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const { toast } = useToast();
   
   const [email, setEmail] = useState("");

@@ -91,7 +91,7 @@ export function AmbassadorsSection() {
                 {formatFollowers(getTotalFollowers(ambassador))} {text.followersLabel}
               </p>
               
-              <div className={`flex justify-center gap-2 ${}`}>
+              <div className={`flex justify-center gap-2 `}>
                 {ambassador.instagramUrl && (
                   <Button
                     variant="ghost"

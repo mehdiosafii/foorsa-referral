@@ -58,7 +58,7 @@ const sectionText = {
 };
 
 export function TestimonialsSection() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const reviews = googleReviews;
   const text = sectionText;
 
