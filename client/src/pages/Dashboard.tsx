@@ -12,7 +12,7 @@ import { RankChart } from "@/components/dashboard/RankChart";
 import { AchievementsBadges } from "@/components/dashboard/AchievementsBadges";
 import { MotivationalQuote } from "@/components/dashboard/MotivationalQuote";
 import { SocialMediaCard } from "@/components/dashboard/SocialMediaCard";
-import { UniversityInfoCard } from "@/components/dashboard/UniversityInfoCard";
+// UniversityInfoCard removed — offers now shown from DB via Available Offers section
 import { MapView } from "@/components/MapView";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -262,8 +262,6 @@ export default function Dashboard() {
           youtubeFollowers={user?.youtubeFollowers}
           tiktokFollowers={user?.tiktokFollowers}
         />
-
-        <UniversityInfoCard />
 
         {chartData && chartData.length > 0 && (
           <PerformanceChart data={chartData} />
