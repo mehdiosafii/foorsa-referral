@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MousePointerClick, Users, TrendingUp, Target, Sparkles, Package, Tag, ExternalLink } from "lucide-react";
+import { MousePointerClick, Users, TrendingUp, Target, Sparkles, Package, Tag, ExternalLink, Calendar } from "lucide-react";
 import type { UserStats, LeaderboardEntry, Lead } from "@shared/schema";
 
 interface Offer {
@@ -138,6 +138,10 @@ export default function Dashboard() {
               <p className="text-muted-foreground">
                 {t.dashboard.subtitle}
               </p>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+              </div>
             </div>
           </div>
         </div>

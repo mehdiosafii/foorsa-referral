@@ -47,8 +47,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const { password: _, ...userWithoutPassword } = user;
-    return res.status(200).json({ success: true, user: userWithoutPassword });
+    const { password: _, ...u } = user;
+    // Transform snake_case to camelCase for frontend
+    const camelUser = {
+      id: u.id,
+      firstName: u.first_name,
+      lastName: u.last_name,
+      email: u.email,
+      role: u.role,
+      referralCode: u.referral_code,
+      profileImageUrl: u.profile_image_url,
+      instagramUrl: u.instagram_url,
+      youtubeUrl: u.youtube_url,
+      tiktokUrl: u.tiktok_url,
+      instagramFollowers: u.instagram_followers,
+      youtubeFollowers: u.youtube_followers,
+      tiktokFollowers: u.tiktok_followers,
+      createdAt: u.created_at,
+    };
+    return res.status(200).json({ success: true, user: camelUser });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
